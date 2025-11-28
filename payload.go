@@ -9,16 +9,17 @@ import (
 )
 
 type Payload struct {
-	Header *Header
-	PersonBlock *PersonBlock
-	TripBlock *TripBlock
-	SeatReservationBlocks []*SeatReservationBlock
-	PassBlocks []*PassBlock
-	Version uint8
-	_io *kaitai.Stream
-	_root *Payload
-	_parent kaitai.Struct
+	Header                *Header                 `json:"header"`
+	PersonBlock           *PersonBlock            `json:"person_block"`
+	TripBlock             *TripBlock              `json:"trip_block"`
+	SeatReservationBlocks []*SeatReservationBlock `json:"seatreservation_blocks,omitempty"`
+	PassBlocks            []*PassBlock            `json:"pass_blocks,omitempty"`
+	Version               uint8                   `json:"version"`
+	_io                   *kaitai.Stream
+	_root                 *Payload
+	_parent               kaitai.Struct
 }
+
 func NewPayload(version uint8) *Payload {
 	return &Payload{
 		Version: version,
@@ -40,7 +41,7 @@ func (this *Payload) Read(io *kaitai.Stream, parent kaitai.Struct, root *Payload
 		return err
 	}
 	this.Header = tmp1
-	if (this.Header.Flags.PersonBlockPresent == true) {
+	if this.Header.Flags.PersonBlockPresent == true {
 		tmp2 := NewPersonBlock()
 		err = tmp2.Read(this._io, this, this._root)
 		if err != nil {
@@ -48,7 +49,7 @@ func (this *Payload) Read(io *kaitai.Stream, parent kaitai.Struct, root *Payload
 		}
 		this.PersonBlock = tmp2
 	}
-	if (this.Header.Flags.TripBlockPresent == true) {
+	if this.Header.Flags.TripBlockPresent == true {
 		tmp3 := NewTripBlock(this.Version)
 		err = tmp3.Read(this._io, this, this._root)
 		if err != nil {
@@ -76,15 +77,16 @@ func (this *Payload) Read(io *kaitai.Stream, parent kaitai.Struct, root *Payload
 	}
 	return err
 }
+
 type AppliedDiscounts struct {
-	Tag uint32
-	_io *kaitai.Stream
-	_root *Payload
+	Tag     uint32 `json:"tag"`
+	_io     *kaitai.Stream
+	_root   *Payload
 	_parent kaitai.Struct
 }
+
 func NewAppliedDiscounts() *AppliedDiscounts {
-	return &AppliedDiscounts{
-	}
+	return &AppliedDiscounts{}
 }
 
 func (this AppliedDiscounts) IO_() *kaitai.Stream {
@@ -109,20 +111,20 @@ func (this *AppliedDiscounts) Read(io *kaitai.Stream, parent kaitai.Struct, root
  *   year * 10000 + month * 100 + day
  */
 type BirthDate struct {
-	Packed uint32
-	_io *kaitai.Stream
-	_root *Payload
-	_parent *PersonBlock
-	_f_day bool
-	Day int
+	Packed   uint32 `json:"packed"`
+	_io      *kaitai.Stream
+	_root    *Payload
+	_parent  *PersonBlock
+	_f_day   bool
+	Day      int `json:"day"`
 	_f_month bool
-	Month int
-	_f_year bool
-	Year int
+	Month    int `json:"month"`
+	_f_year  bool
+	Year     int `json:"year"`
 }
+
 func NewBirthDate() *BirthDate {
-	return &BirthDate{
-	}
+	return &BirthDate{}
 }
 
 func (this BirthDate) IO_() *kaitai.Stream {
@@ -141,28 +143,29 @@ func (this *BirthDate) Read(io *kaitai.Stream, parent *PersonBlock, root *Payloa
 	this.Packed = uint32(tmp6)
 
 	this.Year = int(this.Packed / 10000)
-	this.Month = int((int(this.Packed) - this.Year * 10000) / 100)
-	this.Day = int((int(this.Packed) - this.Year * 10000) - this.Month * 100)
+	this.Month = int((int(this.Packed) - this.Year*10000) / 100)
+	this.Day = int((int(this.Packed) - this.Year*10000) - this.Month*100)
 
 	return err
 }
 
 type Header struct {
-	TicketId string
-	RicsId uint16
-	IssuedAt *Timestamp
-	Price float32
-	Flags *HeaderFlags
-	reserved0002 uint8
-	NumSeatReservationBlocks uint8
-	NumPassBlocks uint8
-	reserved0003 []byte
-	TicketMedium *TicketMedium
-	Version uint8
-	_io *kaitai.Stream
-	_root *Payload
-	_parent *Payload
+	TicketId                 string       `json:"ticket_id"`
+	RicsId                   uint16       `json:"rics_id"`
+	IssuedAt                 *Timestamp   `json:"issued_at"`
+	Price                    float32      `json:"price"`
+	Flags                    *HeaderFlags `json:"flags"`
+	reserved0002             uint8
+	NumSeatReservationBlocks uint8 `json:"num_seat_reservation_blocks"`
+	NumPassBlocks            uint8 `json:"num_pass_blocks"`
+	reserved0003             []byte
+	TicketMedium             *TicketMedium `json:"ticket_medium"`
+	Version                  uint8         `json:"version"`
+	_io                      *kaitai.Stream
+	_root                    *Payload
+	_parent                  *Payload
 }
+
 func NewHeader(version uint8) *Header {
 	return &Header{
 		Version: version,
@@ -178,7 +181,7 @@ func (this *Header) Read(io *kaitai.Stream, parent *Payload, root *Payload) (err
 	this._parent = parent
 	this._root = root
 
-	if (this.Version <= 4) {
+	if this.Version <= 4 {
 		tmp11, err := this._io.ReadBytes(int(18))
 		if err != nil {
 			return err
@@ -186,7 +189,7 @@ func (this *Header) Read(io *kaitai.Stream, parent *Payload, root *Payload) (err
 		tmp11 = kaitai.BytesTerminate(tmp11, 0, false)
 		this.TicketId = string(tmp11)
 	}
-	if (this.Version <= 4) {
+	if this.Version <= 4 {
 		tmp12, err := this._io.ReadU2be()
 		if err != nil {
 			return err
@@ -239,17 +242,18 @@ func (this *Header) Read(io *kaitai.Stream, parent *Payload, root *Payload) (err
 	this.TicketMedium = tmp20
 	return err
 }
+
 type HeaderFlags struct {
-	PersonBlockPresent bool
-	reserved0001 uint64
-	TripBlockPresent bool
-	_io *kaitai.Stream
-	_root *Payload
-	_parent *Header
+	PersonBlockPresent bool `json:"person_block_present"`
+	reserved0001       uint64
+	TripBlockPresent   bool `json:"trip_block_present"`
+	_io                *kaitai.Stream
+	_root              *Payload
+	_parent            *Header
 }
+
 func NewHeaderFlags() *HeaderFlags {
-	return &HeaderFlags{
-	}
+	return &HeaderFlags{}
 }
 
 func (this HeaderFlags) IO_() *kaitai.Stream {
@@ -278,18 +282,20 @@ func (this *HeaderFlags) Read(io *kaitai.Stream, parent *Header, root *Payload) 
 	this.TripBlockPresent = tmp23 != 0
 	return err
 }
+
 type PassBlock struct {
-	TicketKind *TicketKind
-	AppliedDiscounts1 *AppliedDiscounts
-	AppliedDiscounts2 *AppliedDiscounts
-	TravelTime *Timestamp
-	ValidInterval *ValidInterval
-	NumPassengers uint8
-	Version uint8
-	_io *kaitai.Stream
-	_root *Payload
-	_parent *Payload
+	TicketKind        *TicketKind       `json:"ticket_kind"`
+	AppliedDiscounts1 *AppliedDiscounts `json:"applied_discounts_1"`
+	AppliedDiscounts2 *AppliedDiscounts `json:"applied_discounts_2"`
+	TravelTime        *Timestamp        `json:"travel_time"`
+	ValidInterval     *ValidInterval    `json:"valid_interval"`
+	NumPassengers     uint8             `json:"num_passengers"`
+	Version           uint8             `json:"version"`
+	_io               *kaitai.Stream
+	_root             *Payload
+	_parent           *Payload
 }
+
 func NewPassBlock(version uint8) *PassBlock {
 	return &PassBlock{
 		Version: version,
@@ -342,17 +348,18 @@ func (this *PassBlock) Read(io *kaitai.Stream, parent *Payload, root *Payload) (
 	this.NumPassengers = tmp29
 	return err
 }
+
 type PersonBlock struct {
-	Name string
-	BirthDate *BirthDate
-	IdCardNumber string
-	_io *kaitai.Stream
-	_root *Payload
-	_parent *Payload
+	Name         string     `json:"name"`
+	BirthDate    *BirthDate `json:"birth_date"`
+	IdCardNumber string     `json:"id_card_number"`
+	_io          *kaitai.Stream
+	_root        *Payload
+	_parent      *Payload
 }
+
 func NewPersonBlock() *PersonBlock {
-	return &PersonBlock{
-	}
+	return &PersonBlock{}
 }
 
 func (this PersonBlock) IO_() *kaitai.Stream {
@@ -389,22 +396,23 @@ func (this *PersonBlock) Read(io *kaitai.Stream, parent *Payload, root *Payload)
  * Often omitted, mostly relevant for passes
  */
 type SeatReservationBlock struct {
-	DepartureStation *StationId
-	DestinationStation *StationId
-	TicketKind *TicketKind
-	TravelTime *Timestamp
-	RicsCode uint16
-	TrainNumber string
-	NumPassengers uint8
-	CarNumber string
-	SeatNumber uint16
-	SeatNumber2 uint16
-	reserved []byte
-	Version uint8
-	_io *kaitai.Stream
-	_root *Payload
-	_parent *Payload
+	DepartureStation   *StationId  `json:"departure_station"`
+	DestinationStation *StationId  `json:"destination_station"`
+	TicketKind         *TicketKind `json:"ticket_kind"`
+	TravelTime         *Timestamp  `json:"travel_time"`
+	RicsCode           uint16      `json:"rics_code"`
+	TrainNumber        string      `json:"train_number"`
+	NumPassengers      uint8       `json:"num_passengers"`
+	CarNumber          string      `json:"car_number"`
+	SeatNumber         uint16      `json:"seat_number"`
+	SeatNumber2        uint16      `json:"seat_number2"`
+	reserved           []byte
+	Version            uint8 `json:"version"`
+	_io                *kaitai.Stream
+	_root              *Payload
+	_parent            *Payload
 }
+
 func NewSeatReservationBlock(version uint8) *SeatReservationBlock {
 	return &SeatReservationBlock{
 		Version: version,
@@ -449,8 +457,8 @@ func (this *SeatReservationBlock) Read(io *kaitai.Stream, parent *Payload, root 
 		return err
 	}
 	this.RicsCode = uint16(tmp37)
-	var tmp38 int8;
-	if (this.Version >= 6) {
+	var tmp38 int8
+	if this.Version >= 6 {
 		tmp38 = 20
 	} else {
 		tmp38 = 5
@@ -490,14 +498,16 @@ func (this *SeatReservationBlock) Read(io *kaitai.Stream, parent *Payload, root 
 	this.reserved = tmp44
 	return err
 }
+
 type StationId struct {
-	Id uint64
-	Name string
-	Version uint8
-	_io *kaitai.Stream
-	_root *Payload
+	Id      uint64 `json:"id"`
+	Name    string `json:"name"`
+	Version uint8  `json:"version"`
+	_io     *kaitai.Stream
+	_root   *Payload
 	_parent kaitai.Struct
 }
+
 func NewStationId(version uint8) *StationId {
 	return &StationId{
 		Version: version,
@@ -522,28 +532,32 @@ func (this *StationId) Read(io *kaitai.Stream, parent kaitai.Struct, root *Paylo
 }
 
 type TicketKindKnownValues int
+
 const (
 	TicketKindKnownValues__Helyjegy TicketKindKnownValues = 1941101165
-	TicketKindKnownValues__Potjegy TicketKindKnownValues = 4050207847
+	TicketKindKnownValues__Potjegy  TicketKindKnownValues = 4050207847
 )
+
 var values_TicketKindKnownValues = map[TicketKindKnownValues]string{
 	0xf1694467: "potjegy",
 	0x73b2da6d: "helyjegy",
 }
+
 func (v TicketKindKnownValues) String() string {
 	s, _ := values_TicketKindKnownValues[v]
 	return s
 }
+
 type TicketKind struct {
-	Tag  TicketKindKnownValues
-	Name string
-	_io *kaitai.Stream
-	_root *Payload
+	Tag     TicketKindKnownValues `json:"tag"`
+	Name    string                `json:"name"`
+	_io     *kaitai.Stream
+	_root   *Payload
 	_parent kaitai.Struct
 }
+
 func NewTicketKind() *TicketKind {
-	return &TicketKind{
-	}
+	return &TicketKind{}
 }
 
 func (this TicketKind) IO_() *kaitai.Stream {
@@ -565,15 +579,17 @@ func (this *TicketKind) Read(io *kaitai.Stream, parent kaitai.Struct, root *Payl
 }
 
 type TicketMediumKnownValues int
+
 const (
-	TicketMediumKnownValues__ElectronicPdfFromApp TicketMediumKnownValues = 594347296
-	TicketMediumKnownValues__ElectronicPdfFromWeb TicketMediumKnownValues = 864524286
-	TicketMediumKnownValues__ThermalPaperFromEmke TicketMediumKnownValues = 1420145485
-	TicketMediumKnownValues__HologramPaperFromVolanbusz TicketMediumKnownValues = 1763413351
-	TicketMediumKnownValues__PaperFromVendingMachine TicketMediumKnownValues = 2815794854
-	TicketMediumKnownValues__PaperBkkPass TicketMediumKnownValues = 3347428876
+	TicketMediumKnownValues__ElectronicPdfFromApp            TicketMediumKnownValues = 594347296
+	TicketMediumKnownValues__ElectronicPdfFromWeb            TicketMediumKnownValues = 864524286
+	TicketMediumKnownValues__ThermalPaperFromEmke            TicketMediumKnownValues = 1420145485
+	TicketMediumKnownValues__HologramPaperFromVolanbusz      TicketMediumKnownValues = 1763413351
+	TicketMediumKnownValues__PaperFromVendingMachine         TicketMediumKnownValues = 2815794854
+	TicketMediumKnownValues__PaperBkkPass                    TicketMediumKnownValues = 3347428876
 	TicketMediumKnownValues__ThermalPaperFromTicketInspector TicketMediumKnownValues = 4172547533
 )
+
 var values_TicketMediumKnownValues = map[TicketMediumKnownValues]string{
 	0x236d0520: "electronic_pdf_from_app",
 	0x54a5b34d: "thermal_paper_from_emke",
@@ -583,20 +599,22 @@ var values_TicketMediumKnownValues = map[TicketMediumKnownValues]string{
 	0x338797fe: "electronic_pdf_from_web",
 	0xf8b405cd: "thermal_paper_from_ticket_inspector",
 }
+
 func (v TicketMediumKnownValues) String() string {
 	s, _ := values_TicketMediumKnownValues[v]
 	return s
 }
+
 type TicketMedium struct {
-	Tag  TicketMediumKnownValues
-	Name string
-	_io *kaitai.Stream
-	_root *Payload
+	Tag     TicketMediumKnownValues `json:"tag"`
+	Name    string                  `json:"name"`
+	_io     *kaitai.Stream
+	_root   *Payload
 	_parent *Header
 }
+
 func NewTicketMedium() *TicketMedium {
-	return &TicketMedium{
-	}
+	return &TicketMedium{}
 }
 
 func (this TicketMedium) IO_() *kaitai.Stream {
@@ -622,16 +640,16 @@ func (this *TicketMedium) Read(io *kaitai.Stream, parent *Header, root *Payload)
  * 2017-01-01T00:00:00+01:00, as 32 bit integer.
  */
 type Timestamp struct {
-	SecondsSince2017 uint32
-	_io *kaitai.Stream
-	_root *Payload
-	_parent kaitai.Struct
+	SecondsSince2017    uint32 `json:"seconds_since_2017"`
+	_io                 *kaitai.Stream
+	_root               *Payload
+	_parent             kaitai.Struct
 	_f_secondsSince1970 bool
-	SecondsSince1970 int
+	SecondsSince1970    int `json:"seconds_since_1970"`
 }
+
 func NewTimestamp() *Timestamp {
-	return &Timestamp{
-	}
+	return &Timestamp{}
 }
 
 func (this Timestamp) IO_() *kaitai.Stream {
@@ -661,21 +679,22 @@ func (this *Timestamp) String() string {
 }
 
 type TripBlock struct {
-	TicketKind *TicketKind
-	DepartureStation *StationId
-	DestinationStation *StationId
-	ViaStations []*StationId
-	Class string
-	IsRealTicket uint8
-	ValidStartAt *Timestamp
-	ValidInterval *ValidInterval
-	NumPassengers uint8
-	AppliedDiscounts *AppliedDiscounts
-	Version uint8
-	_io *kaitai.Stream
-	_root *Payload
-	_parent *Payload
+	TicketKind         *TicketKind       `json:"ticket_kind"`
+	DepartureStation   *StationId        `json:"departure_station"`
+	DestinationStation *StationId        `json:"destination_station"`
+	ViaStations        []*StationId      `json:"via_stations,omitempty"`
+	Class              string            `json:"class"`
+	IsRealTicket       uint8             `json:"is_real_ticket"`
+	ValidStartAt       *Timestamp        `json:"valid_startat"`
+	ValidInterval      *ValidInterval    `json:"valid_interval"`
+	NumPassengers      uint8             `json:"num_passengers"`
+	AppliedDiscounts   *AppliedDiscounts `json:"applied_discounts"`
+	Version            uint8             `json:"version"`
+	_io                *kaitai.Stream
+	_root              *Payload
+	_parent            *Payload
 }
+
 func NewTripBlock(version uint8) *TripBlock {
 	return &TripBlock{
 		Version: version,
@@ -756,13 +775,15 @@ func (this *TripBlock) Read(io *kaitai.Stream, parent *Payload, root *Payload) (
 	this.AppliedDiscounts = tmp58
 	return err
 }
+
 type ValidInterval struct {
-	Minutes int
-	Version uint8
-	_io *kaitai.Stream
-	_root *Payload
+	Minutes int   `json:"minutes"`
+	Version uint8 `json:"version"`
+	_io     *kaitai.Stream
+	_root   *Payload
 	_parent kaitai.Struct
 }
+
 func NewValidInterval(version uint8) *ValidInterval {
 	return &ValidInterval{
 		Version: version,
@@ -778,7 +799,7 @@ func (this *ValidInterval) Read(io *kaitai.Stream, parent kaitai.Struct, root *P
 	this._parent = parent
 	this._root = root
 
-	switch (this.Version) {
+	switch this.Version {
 	case 2:
 		tmp59, err := this._io.ReadU2be()
 		if err != nil {

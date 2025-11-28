@@ -2,26 +2,26 @@ package mavtrainticket
 
 import (
 	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"github.com/kaitai-io/kaitai_struct_go_runtime/kaitai"
 	"io"
 	"os"
-	"strings"
 	"strconv"
-	"github.com/kaitai-io/kaitai_struct_go_runtime/kaitai"
-	"compress/gzip"
+	"strings"
 )
 
 type Ticket struct {
-	Fn       string
-	Envelope *Envelope
-	Payload   *Payload
-	Ok       bool
+	Filename string    `json:"filename"`
+	Envelope *Envelope `json:"envelope"`
+	Payload  *Payload  `json:"payload"`
+	Valid    bool      `json:"valid"`
 }
 
 func ReadTicket(fn string) (Ticket, error) {
 	t := Ticket{
-		Fn: fn,
+		Filename: fn,
 	}
 
 	f, err := os.Open(fn)
@@ -74,7 +74,7 @@ func ReadTicket(fn string) (Ticket, error) {
 		t.Payload.Header.RicsId = uint16(i)
 	}
 
-	t.Ok = true
+	t.Valid = true
 
 	return t, nil
 }
@@ -139,11 +139,11 @@ func CSVHeader() string {
 }
 
 func (t Ticket) ToCSV() string {
-	if !t.Ok {
+	if !t.Valid {
 		return ""
 	}
 	var b strings.Builder
-	b.WriteString(t.Fn)
+	b.WriteString(t.Filename)
 	b.WriteByte(';')
 	b.WriteString(strconv.Itoa(int(t.Envelope.Version)))
 	b.WriteByte(';')
@@ -211,7 +211,7 @@ func (t Ticket) ToCSV() string {
 }
 
 func (t Ticket) ToJSON() string {
-	if !t.Ok {
+	if !t.Valid {
 		return ""
 	}
 	b, _ := json.Marshal(t.Payload)
