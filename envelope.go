@@ -8,7 +8,7 @@ import (
 	"bytes"
 )
 
-type MavTrainTicketEnvelope struct {
+type Envelope struct {
 	Version uint8
 	SignatureVersion uint8
 	TicketId string
@@ -16,22 +16,22 @@ type MavTrainTicketEnvelope struct {
 	RawPayload []byte
 	Signature []byte
 	_io *kaitai.Stream
-	_root *MavTrainTicketEnvelope
+	_root *Envelope
 	_parent kaitai.Struct
 	_raw_gzip []byte
 	_f_gzip bool
 	gzip *Gzip
 }
-func NewMavTrainTicketEnvelope() *MavTrainTicketEnvelope {
-	return &MavTrainTicketEnvelope{
+func NewEnvelope() *Envelope {
+	return &Envelope{
 	}
 }
 
-func (this MavTrainTicketEnvelope) IO_() *kaitai.Stream {
+func (this Envelope) IO_() *kaitai.Stream {
 	return this._io
 }
 
-func (this *MavTrainTicketEnvelope) Read(io *kaitai.Stream, parent kaitai.Struct, root *MavTrainTicketEnvelope) (err error) {
+func (this *Envelope) Read(io *kaitai.Stream, parent kaitai.Struct, root *Envelope) (err error) {
 	this._io = io
 	this._parent = parent
 	this._root = root
@@ -98,7 +98,7 @@ func (this *MavTrainTicketEnvelope) Read(io *kaitai.Stream, parent kaitai.Struct
 	this.Signature = tmp9
 	return err
 }
-func (this *MavTrainTicketEnvelope) Gzip() (v *Gzip, err error) {
+func (this *Envelope) Gzip() (v *Gzip, err error) {
 	if (this._f_gzip) {
 		return this.gzip, nil
 	}

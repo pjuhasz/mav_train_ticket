@@ -8,15 +8,14 @@ import (
 	"os"
 	"strings"
 	"strconv"
-	"time"
 	"github.com/kaitai-io/kaitai_struct_go_runtime/kaitai"
 	"compress/gzip"
 )
 
 type Ticket struct {
 	Fn       string
-	Envelope *MavTrainTicketEnvelope
-	Payload   *MavTrainTicketPayload
+	Envelope *Envelope
+	Payload   *Payload
 	Ok       bool
 }
 
@@ -32,7 +31,7 @@ func ReadTicket(fn string) (Ticket, error) {
 	defer f.Close()
 
 	s := kaitai.NewStream(f)
-	envelope := NewMavTrainTicketEnvelope()
+	envelope := NewEnvelope()
 	err = envelope.Read(s, envelope, envelope)
 	if err != nil {
 		return t, fmt.Errorf("Can't parse envelope: %v", err)
@@ -60,7 +59,7 @@ func ReadTicket(fn string) (Ticket, error) {
 	decompressedBuf := bytes.NewReader(decompressed)
 	s2 := kaitai.NewStream(decompressedBuf)
 
-	payload := NewMavTrainTicketPayload(envelope.Version)
+	payload := NewPayload(envelope.Version)
 	err = payload.Read(s2, payload, payload)
 	if err != nil {
 		return t, fmt.Errorf("Can't parse ticket: %v", err)
@@ -78,12 +77,6 @@ func ReadTicket(fn string) (Ticket, error) {
 	t.Ok = true
 
 	return t, nil
-}
-
-func (this *MavTrainTicketPayload_Timestamp) String() string {
-	tz, _ := time.LoadLocation("Europe/Budapest")
-	t := time.Unix(int64(this.SecondsSince1970), 0)
-	return t.In(tz).Format(time.DateTime)
 }
 
 func CSVHeader() string {
