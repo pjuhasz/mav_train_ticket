@@ -3,7 +3,6 @@ package mavtrainticket
 import (
 	"bytes"
 	"compress/gzip"
-	"encoding/json"
 	"fmt"
 	"github.com/kaitai-io/kaitai_struct_go_runtime/kaitai"
 	"io"
@@ -81,56 +80,51 @@ func ReadTicket(fn string) (Ticket, error) {
 
 func CSVHeader() string {
 	var b strings.Builder
-	b.WriteString("filename")
-	b.WriteByte(';')
-	b.WriteString("version")
-	b.WriteByte(';')
-	b.WriteString("signature_version")
-	b.WriteByte(';')
-	b.WriteString("ticket_id")
-	b.WriteByte(';')
-	b.WriteString("rics_id")
-	b.WriteByte(';')
-	b.WriteString("issued_at")
-	b.WriteByte(';')
-	b.WriteString("price")
-	b.WriteByte(';')
-	b.WriteString("ticket_medium_tag")
-	b.WriteByte(';')
+	b.WriteString("filename;")
+	b.WriteString("version;")
+	b.WriteString("signature_version;")
+	b.WriteString("ticket_id;")
+	b.WriteString("rics_id;")
+	b.WriteString("issued_at;")
+	b.WriteString("price;")
+	b.WriteString("ticket_medium_tag;")
 
-	if true {
-		b.WriteString("name")
-		b.WriteByte(';')
-		b.WriteString("birth_date")
-		b.WriteByte(';')
-		b.WriteString("id_card_number")
-		b.WriteByte(';')
+	b.WriteString("name;")
+	b.WriteString("birth_date;")
+	b.WriteString("id_card_number;")
 
-	}
-
-	if true {
-		b.WriteString("ticket_kind_tag")
-		b.WriteByte(';')
-		// TODO the rest
-		b.WriteString("applied_discounts_tag")
-		b.WriteByte(';')
-
-	}
+	b.WriteString("ticket_kind_tag;")
+	b.WriteString("departure_station_id;")
+	b.WriteString("departure_station_name;")
+	b.WriteString("destination_station_id;")
+	b.WriteString("destination_station_name;")
+	b.WriteString("class;")
+	b.WriteString("valid_start_at;")
+	b.WriteString("valid_to;")
+	b.WriteString("num_passengers;")
+	b.WriteString("applied_discounts_tag;")
 
 	// what if there are > 1? (no such samples so far, though)
-	if true {
-		b.WriteString("ticket_name_tag")
-		b.WriteByte(';')
-		b.WriteString("applied_discounts_tag1")
-		b.WriteByte(';')
-		b.WriteString("applied_discounts_tag2")
-		b.WriteByte(';')
-		// TODO the rest
-	}
+	b.WriteString("ticket_name_tag;")
+	b.WriteString("applied_discounts_tag1;")
+	b.WriteString("applied_discounts_tag2;")
+	b.WriteString("valid_start_at;")
+	b.WriteString("valid_to;")
+	b.WriteString("num_passengers;")
 
 	for i := 0; i < 2; i++ {
-		b.WriteString(fmt.Sprintf("ticket_name_tag_%d", i+1))
-		b.WriteByte(';')
+		b.WriteString("departure_station_id;")
+		b.WriteString("departure_station_name;")
+		b.WriteString("destination_station_id;")
+		b.WriteString("destination_station_name;")
+		b.WriteString("ticket_name_tag;")
+
+		b.WriteString("travel_time;")
+		b.WriteString("rics_code;")
+		b.WriteString("train_number;")
+		b.WriteString("num_passengers;")
+		b.WriteString("car_number;")
+		b.WriteString("seat_number;")
 	}
 
 	b.WriteByte('\n')
@@ -143,77 +137,82 @@ func (t Ticket) ToCSV() string {
 		return ""
 	}
 	var b strings.Builder
-	b.WriteString(t.Filename)
-	b.WriteByte(';')
-	b.WriteString(strconv.Itoa(int(t.Envelope.Version)))
-	b.WriteByte(';')
-	b.WriteString(strconv.Itoa(int(t.Envelope.SignatureVersion)))
-	b.WriteByte(';')
-	b.WriteString(t.Payload.Header.TicketId)
-	b.WriteByte(';')
-	b.WriteString(strconv.Itoa(int(t.Payload.Header.RicsId)))
-	b.WriteByte(';')
-	b.WriteString(t.Payload.Header.IssuedAt.String())
-	b.WriteByte(';')
-	b.WriteString(fmt.Sprintf("%.1f", t.Payload.Header.Price))
-	b.WriteByte(';')
-	b.WriteString(fmt.Sprintf("%08x", t.Payload.Header.TicketMedium.Tag))
-	b.WriteByte(';')
+	b.WriteString(fmt.Sprintf("%s;%d;%d;%s;%d;%s;%.1f;%08x;",
+		t.Filename,
+		t.Envelope.Version,
+		t.Envelope.SignatureVersion,
+		t.Payload.Header.TicketId,
+		t.Payload.Header.RicsId,
+		t.Payload.Header.IssuedAt.String(),
+		t.Payload.Header.Price,
+		t.Payload.Header.TicketMedium.Tag,
+	))
+
 
 	if t.Payload.Header.Flags.PersonBlockPresent {
-		b.WriteString(t.Payload.PersonBlock.Name)
-		b.WriteByte(';')
-		b.WriteString(fmt.Sprintf("%04d-%02d-%02d",
-			t.Payload.PersonBlock.BirthDate.Year,
-			t.Payload.PersonBlock.BirthDate.Month,
-			t.Payload.PersonBlock.BirthDate.Day,
+		bl := t.Payload.PersonBlock
+		b.WriteString(fmt.Sprintf("%s;%04d-%02d-%02d;%s;",
+			bl.Name,
+			bl.BirthDate.Year,
+			bl.BirthDate.Month,
+			bl.BirthDate.Day,
+			bl.IdCardNumber,
 		))
-		b.WriteByte(';')
-		b.WriteString(t.Payload.PersonBlock.IdCardNumber)
-		b.WriteByte(';')
-
 	} else {
 		b.WriteString(";;;")
 	}
 
 	if t.Payload.Header.Flags.TripBlockPresent {
-		b.WriteString(fmt.Sprintf("%08x", t.Payload.TripBlock.TicketKind.Tag))
-		b.WriteByte(';')
-		// TODO the rest
-		b.WriteString(fmt.Sprintf("%08x", t.Payload.TripBlock.AppliedDiscounts.Tag))
-		b.WriteByte(';')
-
+		bl := t.Payload.TripBlock
+		b.WriteString(fmt.Sprintf("%08x;%d;%s;%d;%s;%s;%s;%s;%d;%08x;",
+			bl.TicketKind.Tag,
+			bl.DepartureStation.Id,
+			bl.DepartureStation.Name,
+			bl.DestinationStation.Id,
+			bl.DestinationStation.Name,
+			bl.Class,
+			bl.ValidStartAt.String(),
+			bl.ValidInterval.AsTimestamp(bl.ValidStartAt),
+			bl.NumPassengers,
+			bl.AppliedDiscounts.Tag,
+		))
 	} else {
-		b.WriteString(";;")
+		b.WriteString(";;;;;;;;;;")
 	}
 
 	// what if there are > 1? (no such samples so far, though)
 	if t.Payload.Header.NumPassBlocks == 1 {
-		b.WriteString(fmt.Sprintf("%08x", t.Payload.PassBlocks[0].TicketKind.Tag))
-		b.WriteByte(';')
-		b.WriteString(fmt.Sprintf("%08x", t.Payload.PassBlocks[0].AppliedDiscounts1.Tag))
-		b.WriteByte(';')
-		b.WriteString(fmt.Sprintf("%08x", t.Payload.PassBlocks[0].AppliedDiscounts2.Tag))
-		b.WriteByte(';')
-		// TODO the rest
+		bl := t.Payload.PassBlocks[0]
+		b.WriteString(fmt.Sprintf("%08x;%08x;%08x;%s;%s;%d;", 
+			bl.TicketKind.Tag,
+			bl.AppliedDiscounts1.Tag,
+			bl.AppliedDiscounts2.Tag,
+			bl.ValidStartAt.String(),
+			bl.ValidInterval.AsTimestamp(bl.ValidStartAt),
+			bl.NumPassengers,
+		))
 	} else {
-		b.WriteString(";;;")
+		b.WriteString(";;;;;;")
 	}
 
 	for i := 0; i < len(t.Payload.SeatReservationBlocks); i++ {
-		b.WriteString(fmt.Sprintf("%08x", t.Payload.SeatReservationBlocks[i].TicketKind.Tag))
-		b.WriteByte(';')
+		bl := t.Payload.SeatReservationBlocks[i]
+		b.WriteString(fmt.Sprintf("%d;%s;%d;%s;%08x;%s;%d;%s;%d;%s;%d;",
+			bl.DepartureStation.Id,
+			bl.DepartureStation.Name,
+			bl.DestinationStation.Id,
+			bl.DestinationStation.Name,
+			bl.TicketKind.Tag,
+			bl.TravelTime.String(),
+			bl.RicsCode,
+			bl.TrainNumber,
+			bl.NumPassengers,
+			bl.CarNumber,
+			bl.SeatNumber,
+		))
 	}
 
 	b.WriteByte('\n')
 
 	return b.String()
-}
-
-func (t Ticket) ToJSON() string {
-	if !t.Valid {
-		return ""
-	}
-	b, _ := json.Marshal(t.Payload)
-	return string(b)
 }

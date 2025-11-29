@@ -12,7 +12,7 @@ type Payload struct {
 	Header                *Header                 `json:"header"`
 	PersonBlock           *PersonBlock            `json:"person_block"`
 	TripBlock             *TripBlock              `json:"trip_block"`
-	SeatReservationBlocks []*SeatReservationBlock `json:"seatreservation_blocks,omitempty"`
+	SeatReservationBlocks []*SeatReservationBlock `json:"seat_reservation_blocks,omitempty"`
 	PassBlocks            []*PassBlock            `json:"pass_blocks,omitempty"`
 	Version               uint8                   `json:"version"`
 	_io                   *kaitai.Stream
@@ -287,7 +287,7 @@ type PassBlock struct {
 	TicketKind        *TicketKind       `json:"ticket_kind"`
 	AppliedDiscounts1 *AppliedDiscounts `json:"applied_discounts_1"`
 	AppliedDiscounts2 *AppliedDiscounts `json:"applied_discounts_2"`
-	TravelTime        *Timestamp        `json:"travel_time"`
+	ValidStartAt      *Timestamp        `json:"valid_start_at"`
 	ValidInterval     *ValidInterval    `json:"valid_interval"`
 	NumPassengers     uint8             `json:"num_passengers"`
 	Version           uint8             `json:"version"`
@@ -334,7 +334,7 @@ func (this *PassBlock) Read(io *kaitai.Stream, parent *Payload, root *Payload) (
 	if err != nil {
 		return err
 	}
-	this.TravelTime = tmp27
+	this.ValidStartAt = tmp27
 	tmp28 := NewValidInterval(this.Version)
 	err = tmp28.Read(this._io, this, this._root)
 	if err != nil {
@@ -557,7 +557,7 @@ var values_TicketKindKnownValues = map[TicketKindKnownValues]string{
 	0x73b2da6d: "helyjegy",
 }
 
-func (v TicketKindKnownValues) String() string {
+func (v TicketKindKnownValues) ToString() string {
 	s, _ := values_TicketKindKnownValues[v]
 	return s
 }
@@ -588,7 +588,7 @@ func (this *TicketKind) Read(io *kaitai.Stream, parent kaitai.Struct, root *Payl
 		return err
 	}
 	this.Tag = TicketKindKnownValues(tmp46)
-	this.Name = this.Tag.String()
+	this.Name = this.Tag.ToString()
 	return err
 }
 
@@ -614,7 +614,7 @@ var values_TicketMediumKnownValues = map[TicketMediumKnownValues]string{
 	0xf8b405cd: "thermal_paper_from_ticket_inspector",
 }
 
-func (v TicketMediumKnownValues) String() string {
+func (v TicketMediumKnownValues) ToString() string {
 	s, _ := values_TicketMediumKnownValues[v]
 	return s
 }
@@ -645,7 +645,7 @@ func (this *TicketMedium) Read(io *kaitai.Stream, parent *Header, root *Payload)
 		return err
 	}
 	this.Tag = TicketMediumKnownValues(tmp47)
-	this.Name = this.Tag.String()
+	this.Name = this.Tag.ToString()
 	return err
 }
 
@@ -834,4 +834,10 @@ func (this *ValidInterval) Read(io *kaitai.Stream, parent kaitai.Struct, root *P
 		this.Minutes = int(tmp61)
 	}
 	return err
+}
+
+func (this *ValidInterval) AsTimestamp(start *Timestamp) string {
+	tz, _ := time.LoadLocation("Europe/Budapest")
+	t := time.Unix(int64(start.SecondsSince1970 + this.Minutes * 60), 0)
+	return t.In(tz).Format(time.DateTime)
 }
