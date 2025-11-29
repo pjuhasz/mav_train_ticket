@@ -15,6 +15,10 @@ seq:
   - id: trip_block
     type: trip_block(version)
     if: header.flags.trip_block_present == true
+  - id: class_upgrade_blocks
+    type: class_upgrade_blocks(version)
+    repeat: expr
+    repeat-expr: header.num_class_upgrade_blocks
   - id: seat_reservation_blocks
     type: seat_reservation_block(version)
     repeat: expr
@@ -123,7 +127,7 @@ types:
         type: f4
       - id: flags
         type: header_flags
-      - id: reserved_0002
+      - id: num_class_upgrade_blocks
         type: u1
       - id: num_seat_reservation_blocks
         type: u1
@@ -177,6 +181,29 @@ types:
         type: u1
       - id: applied_discounts
         type: applied_discounts
+  class_upgrade_blocks:
+    params:
+      - id: version
+        type: u1
+    seq:
+      - id: departure_station
+        type: station_id(version)
+      - id: destination_station
+        type: station_id(version)
+      - id: class
+        type: str
+        size: 1
+        encoding: ascii
+      - id: ticket_kind
+        type: ticket_kind
+      - id: valid_start_at
+        type: timestamp
+      - id: valid_interval
+        type: valid_interval(version)
+      - id: num_passengers
+        type: u1
+      - id: applied_discounts
+        type: applied_discounts
   seat_reservation_block:
     params:
       - id: version
@@ -221,7 +248,7 @@ types:
         type: applied_discounts
       - id: applied_discounts_2
         type: applied_discounts
-      - id: travel_time
+      - id: valid_start_at
         type: timestamp
       - id: valid_interval
         type: valid_interval(version)

@@ -12,6 +12,7 @@ type Payload struct {
 	Header                *Header                 `json:"header"`
 	PersonBlock           *PersonBlock            `json:"person_block"`
 	TripBlock             *TripBlock              `json:"trip_block"`
+	ClassUpgradeBlocks    []*ClassUpgradeBlock    `json:"class_upgrade_blocks,omitempty"`
 	SeatReservationBlocks []*SeatReservationBlock `json:"seat_reservation_blocks,omitempty"`
 	PassBlocks            []*PassBlock            `json:"pass_blocks,omitempty"`
 	Version               uint8                   `json:"version"`
@@ -57,23 +58,32 @@ func (this *Payload) Read(io *kaitai.Stream, parent kaitai.Struct, root *Payload
 		}
 		this.TripBlock = tmp3
 	}
-	for i := 0; i < int(this.Header.NumSeatReservationBlocks); i++ {
+	for i := 0; i < int(this.Header.NumClassUpgradeBlocks); i++ {
 		_ = i
-		tmp4 := NewSeatReservationBlock(this.Version)
+		tmp4 := NewClassUpgradeBlock(this.Version)
 		err = tmp4.Read(this._io, this, this._root)
 		if err != nil {
 			return err
 		}
-		this.SeatReservationBlocks = append(this.SeatReservationBlocks, tmp4)
+		this.ClassUpgradeBlocks = append(this.ClassUpgradeBlocks, tmp4)
 	}
-	for i := 0; i < int(this.Header.NumPassBlocks); i++ {
+	for i := 0; i < int(this.Header.NumSeatReservationBlocks); i++ {
 		_ = i
-		tmp5 := NewPassBlock(this.Version)
+		tmp5 := NewSeatReservationBlock(this.Version)
 		err = tmp5.Read(this._io, this, this._root)
 		if err != nil {
 			return err
 		}
-		this.PassBlocks = append(this.PassBlocks, tmp5)
+		this.SeatReservationBlocks = append(this.SeatReservationBlocks, tmp5)
+	}
+	for i := 0; i < int(this.Header.NumPassBlocks); i++ {
+		_ = i
+		tmp6 := NewPassBlock(this.Version)
+		err = tmp6.Read(this._io, this, this._root)
+		if err != nil {
+			return err
+		}
+		this.PassBlocks = append(this.PassBlocks, tmp6)
 	}
 	return err
 }
@@ -149,13 +159,92 @@ func (this *BirthDate) Read(io *kaitai.Stream, parent *PersonBlock, root *Payloa
 	return err
 }
 
+type ClassUpgradeBlock struct {
+	DepartureStation *StationId
+	DestinationStation *StationId
+	Class string
+	TicketKind *TicketKind
+	ValidStartAt *Timestamp
+	ValidInterval *ValidInterval
+	NumPassengers uint8
+	AppliedDiscounts *AppliedDiscounts
+	Version uint8
+	_io *kaitai.Stream
+	_root *Payload
+	_parent *Payload
+}
+func NewClassUpgradeBlock(version uint8) *ClassUpgradeBlock {
+	return &ClassUpgradeBlock{
+		Version: version,
+	}
+}
+
+func (this ClassUpgradeBlock) IO_() *kaitai.Stream {
+	return this._io
+}
+
+func (this *ClassUpgradeBlock) Read(io *kaitai.Stream, parent *Payload, root *Payload) (err error) {
+	this._io = io
+	this._parent = parent
+	this._root = root
+
+	tmp12 := NewStationId(this.Version)
+	err = tmp12.Read(this._io, this, this._root)
+	if err != nil {
+		return err
+	}
+	this.DepartureStation = tmp12
+	tmp13 := NewStationId(this.Version)
+	err = tmp13.Read(this._io, this, this._root)
+	if err != nil {
+		return err
+	}
+	this.DestinationStation = tmp13
+	tmp14, err := this._io.ReadBytes(int(1))
+	if err != nil {
+		return err
+	}
+	tmp14 = tmp14
+	this.Class = string(tmp14)
+	tmp15 := NewTicketKind()
+	err = tmp15.Read(this._io, this, this._root)
+	if err != nil {
+		return err
+	}
+	this.TicketKind = tmp15
+	tmp16 := NewTimestamp()
+	err = tmp16.Read(this._io, this, this._root)
+	if err != nil {
+		return err
+	}
+	this.ValidStartAt = tmp16
+	tmp17 := NewValidInterval(this.Version)
+	err = tmp17.Read(this._io, this, this._root)
+	if err != nil {
+		return err
+	}
+	this.ValidInterval = tmp17
+	tmp18, err := this._io.ReadU1()
+	if err != nil {
+		return err
+	}
+	this.NumPassengers = tmp18
+	tmp19 := NewAppliedDiscounts()
+	err = tmp19.Read(this._io, this, this._root)
+	if err != nil {
+		return err
+	}
+	this.AppliedDiscounts = tmp19
+	return err
+}
+
 type Header struct {
 	TicketId                 string       `json:"ticket_id"`
 	RicsId                   uint16       `json:"rics_id"`
 	IssuedAt                 *Timestamp   `json:"issued_at"`
 	Price                    float32      `json:"price"`
 	Flags                    *HeaderFlags `json:"flags"`
-	reserved0002             uint8
+	NumClassUpgradeBlocks    uint8 `json:"num_class_upgrade_blocks"`
 	NumSeatReservationBlocks uint8 `json:"num_seat_reservation_blocks"`
 	NumPassBlocks            uint8 `json:"num_pass_blocks"`
 	reserved0003             []byte
@@ -217,7 +306,7 @@ func (this *Header) Read(io *kaitai.Stream, parent *Payload, root *Payload) (err
 	if err != nil {
 		return err
 	}
-	this.reserved0002 = tmp16
+	this.NumClassUpgradeBlocks = tmp16
 	tmp17, err := this._io.ReadU1()
 	if err != nil {
 		return err

@@ -80,6 +80,7 @@ func ReadTicket(fn string) (Ticket, error) {
 
 func CSVHeader() string {
 	var b strings.Builder
+	// header
 	b.WriteString("filename;")
 	b.WriteString("version;")
 	b.WriteString("signature_version;")
@@ -89,10 +90,12 @@ func CSVHeader() string {
 	b.WriteString("price;")
 	b.WriteString("ticket_medium_tag;")
 
+	// person block
 	b.WriteString("name;")
 	b.WriteString("birth_date;")
 	b.WriteString("id_card_number;")
 
+	// trip block
 	b.WriteString("ticket_kind_tag;")
 	b.WriteString("departure_station_id;")
 	b.WriteString("departure_station_name;")
@@ -104,7 +107,19 @@ func CSVHeader() string {
 	b.WriteString("num_passengers;")
 	b.WriteString("applied_discounts_tag;")
 
-	// what if there are > 1? (no such samples so far, though)
+	// class upgrade block - what if there are > 1? (no such samples so far, though)
+	b.WriteString("departure_station_id;")
+	b.WriteString("departure_station_name;")
+	b.WriteString("destination_station_id;")
+	b.WriteString("destination_station_name;")
+	b.WriteString("class;")
+	b.WriteString("ticket_kind_tag;")
+	b.WriteString("valid_start_at;")
+	b.WriteString("valid_to;")
+	b.WriteString("num_passengers;")
+	b.WriteString("applied_discounts_tag;")
+
+	// pass block - what if there are > 1? (no such samples so far, though)
 	b.WriteString("ticket_name_tag;")
 	b.WriteString("applied_discounts_tag1;")
 	b.WriteString("applied_discounts_tag2;")
@@ -112,13 +127,13 @@ func CSVHeader() string {
 	b.WriteString("valid_to;")
 	b.WriteString("num_passengers;")
 
+	// seat reservation block - reserve columns for two
 	for i := 0; i < 2; i++ {
 		b.WriteString("departure_station_id;")
 		b.WriteString("departure_station_name;")
 		b.WriteString("destination_station_id;")
 		b.WriteString("destination_station_name;")
 		b.WriteString("ticket_name_tag;")
-
 		b.WriteString("travel_time;")
 		b.WriteString("rics_code;")
 		b.WriteString("train_number;")
@@ -181,7 +196,26 @@ func (t Ticket) ToCSV() string {
 	}
 
 	// what if there are > 1? (no such samples so far, though)
-	if t.Payload.Header.NumPassBlocks == 1 {
+	if t.Payload.Header.NumClassUpgradeBlocks > 0 {
+		bl := t.Payload.ClassUpgradeBlocks[0]
+		b.WriteString(fmt.Sprintf("%d;%s;%d;%s;%s;%08x;%s;%s;%d;%08x;", 
+			bl.DepartureStation.Id,
+			bl.DepartureStation.Name,
+			bl.DestinationStation.Id,
+			bl.DestinationStation.Name,
+			bl.Class,
+			bl.TicketKind.Tag,
+			bl.ValidStartAt.String(),
+			bl.ValidInterval.AsTimestamp(bl.ValidStartAt),
+			bl.NumPassengers,
+			bl.AppliedDiscounts.Tag,
+		))
+	} else {
+		b.WriteString(";;;;;;;;;;")
+	}
+
+	// what if there are > 1? (no such samples so far, though)
+	if t.Payload.Header.NumPassBlocks > 0 {
 		bl := t.Payload.PassBlocks[0]
 		b.WriteString(fmt.Sprintf("%08x;%08x;%08x;%s;%s;%d;", 
 			bl.TicketKind.Tag,
