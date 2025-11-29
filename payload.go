@@ -528,6 +528,20 @@ func (this *StationId) Read(io *kaitai.Stream, parent kaitai.Struct, root *Paylo
 		return err
 	}
 	this.Id = tmp45
+
+	found := false
+	if this.Version <= 4 {
+		this.Name, found = uicStationNames[this.Id]
+		if !found {
+			this.Name, found = mavStationNames[this.Id]
+		}
+	} else {
+		this.Name, found = mavStationNames[this.Id]
+		if !found {
+			this.Name, found = uicStationNames[this.Id]
+		}
+	}
+
 	return err
 }
 
