@@ -641,14 +641,20 @@ const (
 	TicketKindKnownValues__Potjegy  TicketKindKnownValues = 4050207847
 )
 
-var values_TicketKindKnownValues = map[TicketKindKnownValues]string{
-	0xf1694467: "potjegy",
-	0x73b2da6d: "helyjegy",
+var values_TicketKindKnownValues = map[TicketKindKnownValues][numLangs]string{
+	0xf1694467: [numLangs]string{"surcharge", "Surcharge", "Pótdíj" },
+	0x73b2da6d: [numLangs]string{"seat_reservation", "Seat reservation", "Helyjegy" },
 }
 
-func (v TicketKindKnownValues) ToString() string {
-	s, _ := values_TicketKindKnownValues[v]
-	return s
+func (v TicketKindKnownValues) ToString(l Language) string {
+	if l >= numLangs {
+		l = 0
+	}
+	s, found := values_TicketKindKnownValues[v]
+	if ! found {
+		return ""
+	}
+	return s[l]
 }
 
 type TicketKind struct {
@@ -677,7 +683,7 @@ func (this *TicketKind) Read(io *kaitai.Stream, parent kaitai.Struct, root *Payl
 		return err
 	}
 	this.Tag = TicketKindKnownValues(tmp46)
-	this.Name = this.Tag.ToString()
+	this.Name = this.Tag.ToString(0)
 	return err
 }
 
@@ -693,19 +699,46 @@ const (
 	TicketMediumKnownValues__ThermalPaperFromTicketInspector TicketMediumKnownValues = 4172547533
 )
 
-var values_TicketMediumKnownValues = map[TicketMediumKnownValues]string{
-	0x236d0520: "electronic_pdf_from_app",
-	0x54a5b34d: "thermal_paper_from_emke",
-	0x691b8d67: "hologram_paper_from_volanbusz",
-	0xa7d59ea6: "paper_from_vending_machine",
-	0xc785b60c: "paper_bkk_pass",
-	0x338797fe: "electronic_pdf_from_web",
-	0xf8b405cd: "thermal_paper_from_ticket_inspector",
+var values_TicketMediumKnownValues = map[TicketMediumKnownValues][numLangs]string{
+	0x236d0520: [numLangs]string{
+		"electronic_pdf_from_app",
+		"PDF from app",
+		"PDF az appból" },
+	0x54a5b34d: [numLangs]string{
+		"thermal_paper_from_emke",
+		"Thermal paper from EMKE",
+		"Hőpapír EMKE nyomtatóból" },
+	0x691b8d67: [numLangs]string{
+		"hologram_paper_from_volanbusz",
+		"Hologram paper from Volanbusz",
+		"Hologramos papír a Volánbusztól" },
+	0xa7d59ea6: [numLangs]string{
+		"paper_from_vending_machine",
+		"Paper from vending machine",
+		"Papír a jegykiadó automatából" },
+	0xc785b60c: [numLangs]string{
+		"paper_bkk_pass",
+		"Paper BKK pass",
+		"Papír BKK bérlet" },
+	0x338797fe: [numLangs]string{
+		"electronic_pdf_from_web",
+		"PDF from MAV website",
+		"PDF a MÁV honlapjáról" },
+	0xf8b405cd: [numLangs]string{
+		"thermal_paper_from_ticket_inspector",
+		"Thermal paper from ticket inspector",
+		"Hőpapír a jegykezelőtől" },
 }
 
-func (v TicketMediumKnownValues) ToString() string {
-	s, _ := values_TicketMediumKnownValues[v]
-	return s
+func (v TicketMediumKnownValues) ToString(l Language) string {
+	if l >= numLangs {
+		l = 0
+	}
+	s, found := values_TicketMediumKnownValues[v]
+	if ! found {
+		return ""
+	}
+	return s[l]
 }
 
 type TicketMedium struct {
@@ -734,7 +767,7 @@ func (this *TicketMedium) Read(io *kaitai.Stream, parent *Header, root *Payload)
 		return err
 	}
 	this.Tag = TicketMediumKnownValues(tmp47)
-	this.Name = this.Tag.ToString()
+	this.Name = this.Tag.ToString(0)
 	return err
 }
 

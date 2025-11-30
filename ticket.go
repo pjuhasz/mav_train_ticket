@@ -11,6 +11,14 @@ import (
 	"strings"
 )
 
+type Language uint
+const (
+	LangNone Language = iota
+	LangEn
+	LangHu
+	numLangs
+)
+
 type Ticket struct {
 	Filename string    `json:"filename"`
 	Envelope *Envelope `json:"envelope"`
@@ -160,7 +168,7 @@ func CSVHeader() string {
 	return b.String()
 }
 
-func (t Ticket) ToCSV() string {
+func (t *Ticket) ToCSV() string {
 	if !t.Valid {
 		return ""
 	}
@@ -262,4 +270,31 @@ func (t Ticket) ToCSV() string {
 	b.WriteByte('\n')
 
 	return b.String()
+}
+
+func (t *Ticket) Translate(l Language) {
+	if l >= numLangs {
+		l = 0
+	}
+
+	if ! t.Valid || t.Payload == nil {
+		return
+	}
+	p := t.Payload
+
+	p.Header.TicketMedium.Name = p.Header.TicketMedium.Tag.ToString(l)
+
+	if p.TripBlock != nil && p.TripBlock.TicketKind != nil {
+		p.TripBlock.TicketKind.Name = p.TripBlock.TicketKind.Tag.ToString(l)
+	}
+
+	for _, bl := range p.ClassUpgradeBlocks {
+		bl.TicketKind.Name = bl.TicketKind.Tag.ToString(l)
+	}
+	for _, bl := range p.SeatReservationBlocks {
+		bl.TicketKind.Name = bl.TicketKind.Tag.ToString(l)
+	}
+	for _, bl := range p.PassBlocks {
+		bl.TicketKind.Name = bl.TicketKind.Tag.ToString(l)
+	}
 }
