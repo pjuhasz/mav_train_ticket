@@ -18,41 +18,33 @@ type Ticket struct {
 	Valid    bool      `json:"valid"`
 }
 
-func ReadTicket(fn string) (Ticket, error) {
-	t := Ticket{
-		Filename: fn,
-	}
-
-	f, err := os.Open(fn)
-	if err != nil {
-		return t, fmt.Errorf("Can't open file: %v", err)
-	}
-	defer f.Close()
+func Parse(f io.ReadSeeker) (*Ticket, error) {
+	t := &Ticket{}
 
 	s := kaitai.NewStream(f)
 	envelope := NewEnvelope()
-	err = envelope.Read(s, envelope, envelope)
+	err := envelope.Read(s, envelope, envelope)
 	if err != nil {
-		return t, fmt.Errorf("Can't parse envelope: %v", err)
+		return nil, fmt.Errorf("Can't parse envelope: %v", err)
 	}
 
 	rawBuf := bytes.NewBuffer(envelope.RawPayload)
 	gz, err := gzip.NewReader(rawBuf)
 	if err != nil {
-		return t, fmt.Errorf("Can't init decompressing payload: %v", err)
+		return nil, fmt.Errorf("Can't init decompressing payload: %v", err)
 	}
 	defer gz.Close()
 
 	gzx, err := envelope.Gzip()
 	if err != nil {
-		return t, fmt.Errorf("Can't get gzip length from envelope: %v", err)
+		return nil, fmt.Errorf("Can't get gzip length from envelope: %v", err)
 	}
 
 	expectedLen := int(gzx.LenUncompressed)
 	decompressed := make([]byte, expectedLen)
 	n, err := io.ReadFull(gz, decompressed)
 	if n != expectedLen || err != nil {
-		return t, fmt.Errorf("Can't decompress payload: %v", err)
+		return nil, fmt.Errorf("Can't decompress payload: %v", err)
 	}
 
 	decompressedBuf := bytes.NewReader(decompressed)
@@ -61,7 +53,7 @@ func ReadTicket(fn string) (Ticket, error) {
 	payload := NewPayload(envelope.Version)
 	err = payload.Read(s2, payload, payload)
 	if err != nil {
-		return t, fmt.Errorf("Can't parse ticket: %v", err)
+		return nil, fmt.Errorf("Can't parse ticket: %v", err)
 	}
 
 	t.Envelope = envelope
@@ -76,6 +68,27 @@ func ReadTicket(fn string) (Ticket, error) {
 	t.Valid = true
 
 	return t, nil
+}
+
+func ParseFile(fn string) (*Ticket, error) {
+	f, err := os.Open(fn)
+	if err != nil {
+		return nil, fmt.Errorf("Can't open file: %v", err)
+	}
+	defer f.Close()
+
+	t, err := Parse(f)
+	if err != nil {
+		return nil, err
+	}
+
+	t.Filename = fn
+	return t, nil
+}
+
+func ParseBytes(blob []byte) (*Ticket, error) {
+	reader := bytes.NewReader(blob)
+	return Parse(reader)
 }
 
 func CSVHeader() string {
