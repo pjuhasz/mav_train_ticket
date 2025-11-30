@@ -22,11 +22,17 @@ my $data;
 	}
 }
 
-my (%uic, %mav_ref);
+my %mav_ref;
+
+# some very common stations are weirdly missing from openstreetmap
+my %uic = (
+	267  => 'Budapest-Keleti',
+	3639 => 'Budapest-Déli',
+);
 
 for my $node (@{$data->{elements}}) {
 	my $tags = $node->{tags};
-	if (exists $tags->{uic_ref} and $tags->{uic_ref} =~ /^\d+$/) {
+	if (exists $tags->{uic_ref} and $tags->{uic_ref} =~ /^\d+$/ and defined $tags->{name}) {
 		$uic{$tags->{uic_ref}} = $tags->{name};
 	}
 	if (exists $tags->{'ref:mav'}) {
