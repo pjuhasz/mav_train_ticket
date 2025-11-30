@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use JSON::XS;
+use utf8;
 
 my $fn = $ARGV[0];
 die "Usage: $0 <file.json>" unless defined $fn;
@@ -22,10 +23,10 @@ my $data;
 	}
 }
 
-my %mav_ref;
+my %uic;
 
 # some very common stations are weirdly missing from openstreetmap
-my %uic = (
+my %mav_ref = (
 	267  => 'Budapest-Keleti',
 	3639 => 'Budapest-Déli',
 );
