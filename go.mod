@@ -1,4 +1,4 @@
-module mavtrainticket
+module github.com/pjuhasz/mav_train_ticket
 
 go 1.23.11
 

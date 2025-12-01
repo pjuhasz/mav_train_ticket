@@ -1,4 +1,4 @@
-package mavtrainticket
+package mav_train_ticket
 
 import (
 	"bytes"

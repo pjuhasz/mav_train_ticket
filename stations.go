@@ -1,4 +1,4 @@
-package mavtrainticket
+package mav_train_ticket
 
 var uicStationNames = map[uint64]string{
 	5504135: `Aba-Sárkeresztúr`,

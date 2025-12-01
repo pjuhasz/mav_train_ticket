@@ -44,7 +44,7 @@ for my $node (@{$data->{elements}}) {
 binmode STDOUT, ':encoding(UTF-8)';
 
 print <<EOH;
-package mavtrainticket
+package mav_train_ticket
 
 var uicStationNames = map[uint64]string{
 EOH
