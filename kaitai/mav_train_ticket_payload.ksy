@@ -16,7 +16,7 @@ seq:
     type: trip_block(version)
     if: header.flags.trip_block_present == true
   - id: class_upgrade_blocks
-    type: class_upgrade_blocks(version)
+    type: class_upgrade_block(version)
     repeat: expr
     repeat-expr: header.num_class_upgrade_blocks
   - id: seat_reservation_blocks
@@ -181,7 +181,7 @@ types:
         type: u1
       - id: applied_discounts
         type: applied_discounts
-  class_upgrade_blocks:
+  class_upgrade_block:
     params:
       - id: version
         type: u1

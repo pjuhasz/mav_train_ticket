@@ -19,6 +19,7 @@ const (
 	numLangs
 )
 
+// Ticket represents a fully parsed MÁV train ticket barcode.
 type Ticket struct {
 	Filename string    `json:"filename"`
 	Envelope *Envelope `json:"envelope"`
@@ -26,6 +27,11 @@ type Ticket struct {
 	Valid    bool      `json:"valid"`
 }
 
+// Parse is the main entry point of this library. It accepts any entity
+// that satisfies the io.Reader and io.Seeker interfaces (e.g. a filehandle),
+// and returns a fully parsed Ticket object. The Valid field will be set to
+// true if parsing was successful. Otherwise the Ticket will be nil and error
+// will be set.
 func Parse(f io.ReadSeeker) (*Ticket, error) {
 	t := &Ticket{}
 
@@ -78,6 +84,8 @@ func Parse(f io.ReadSeeker) (*Ticket, error) {
 	return t, nil
 }
 
+// ParseFile is a convenience wrapper around Parse that expects a file name.
+// It attempts to open the file and Parse it as usual.
 func ParseFile(fn string) (*Ticket, error) {
 	f, err := os.Open(fn)
 	if err != nil {
@@ -94,11 +102,16 @@ func ParseFile(fn string) (*Ticket, error) {
 	return t, nil
 }
 
+// ParseFile is a convenience wrapper around Parse that expects an in-memory
+// byte array.
 func ParseBytes(blob []byte) (*Ticket, error) {
 	reader := bytes.NewReader(blob)
 	return Parse(reader)
 }
 
+// CSVHeader is an auxiliary function that returns the names of the data
+// fields in the order they will be printed by ToCSV, joined by semicolons
+// and concatenated.
 func CSVHeader() string {
 	var b strings.Builder
 	// header
@@ -168,6 +181,9 @@ func CSVHeader() string {
 	return b.String()
 }
 
+// ToCSV provides a concise, one-line string representation of a parsed Ticket,
+// that is, the relevant data fields formatted, joined by semicolons and
+// concatenated.
 func (t *Ticket) ToCSV() string {
 	if !t.Valid {
 		return ""
@@ -272,6 +288,10 @@ func (t *Ticket) ToCSV() string {
 	return b.String()
 }
 
+// Translate can be called on a Parsed Ticket to change the string
+// representations of known values for certain data fields (ticket kind,
+// ticket medium etc.) to human-readable equivalents.
+// Currently English and Hungarian names are supported.
 func (t *Ticket) Translate(l Language) {
 	if l >= numLangs {
 		l = 0
