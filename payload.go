@@ -160,19 +160,20 @@ func (this *BirthDate) Read(io *kaitai.Stream, parent *PersonBlock, root *Payloa
 }
 
 type ClassUpgradeBlock struct {
-	DepartureStation *StationId
-	DestinationStation *StationId
-	Class string
-	TicketKind *TicketKind
-	ValidStartAt *Timestamp
-	ValidInterval *ValidInterval
-	NumPassengers uint8
-	AppliedDiscounts *AppliedDiscounts
-	Version uint8
-	_io *kaitai.Stream
-	_root *Payload
-	_parent *Payload
+	DepartureStation   *StationId        `json:"departure_station"`
+	DestinationStation *StationId        `json:"destination_station"`
+	Class              string            `json:"class"`
+	TicketKind         *TicketKind       `json:"ticket_kind"`
+	ValidStartAt       *Timestamp        `json:"valid_start_at"`
+	ValidInterval      *ValidInterval    `json:"valid_interval"`
+	NumPassengers      uint8             `json:"num_passengers"`
+	AppliedDiscounts   *AppliedDiscounts `json:"applied_discounts"`
+	Version            uint8             `json:"Version"`
+	_io                *kaitai.Stream
+	_root              *Payload
+	_parent            *Payload
 }
+
 func NewClassUpgradeBlock(version uint8) *ClassUpgradeBlock {
 	return &ClassUpgradeBlock{
 		Version: version,
@@ -244,9 +245,9 @@ type Header struct {
 	IssuedAt                 *Timestamp   `json:"issued_at"`
 	Price                    float32      `json:"price"`
 	Flags                    *HeaderFlags `json:"flags"`
-	NumClassUpgradeBlocks    uint8 `json:"num_class_upgrade_blocks"`
-	NumSeatReservationBlocks uint8 `json:"num_seat_reservation_blocks"`
-	NumPassBlocks            uint8 `json:"num_pass_blocks"`
+	NumClassUpgradeBlocks    uint8        `json:"num_class_upgrade_blocks"`
+	NumSeatReservationBlocks uint8        `json:"num_seat_reservation_blocks"`
+	NumPassBlocks            uint8        `json:"num_pass_blocks"`
 	reserved0003             []byte
 	TicketMedium             *TicketMedium `json:"ticket_medium"`
 	Version                  uint8         `json:"version"`
@@ -642,8 +643,8 @@ const (
 )
 
 var values_TicketKindKnownValues = map[TicketKindKnownValues][numLangs]string{
-	0xf1694467: [numLangs]string{"surcharge", "Surcharge", "Pótdíj" },
-	0x73b2da6d: [numLangs]string{"seat_reservation", "Seat reservation", "Helyjegy" },
+	0xf1694467: [numLangs]string{"surcharge", "Surcharge", "Pótdíj"},
+	0x73b2da6d: [numLangs]string{"seat_reservation", "Seat reservation", "Helyjegy"},
 }
 
 func (v TicketKindKnownValues) ToString(l Language) string {
@@ -651,7 +652,7 @@ func (v TicketKindKnownValues) ToString(l Language) string {
 		l = 0
 	}
 	s, found := values_TicketKindKnownValues[v]
-	if ! found {
+	if !found {
 		return ""
 	}
 	return s[l]
@@ -703,31 +704,31 @@ var values_TicketMediumKnownValues = map[TicketMediumKnownValues][numLangs]strin
 	0x236d0520: [numLangs]string{
 		"electronic_pdf_from_app",
 		"PDF from app",
-		"PDF az appból" },
+		"PDF az appból"},
 	0x54a5b34d: [numLangs]string{
 		"thermal_paper_from_emke",
 		"Thermal paper from EMKE",
-		"Hőpapír EMKE nyomtatóból" },
+		"Hőpapír EMKE nyomtatóból"},
 	0x691b8d67: [numLangs]string{
 		"hologram_paper_from_volanbusz",
 		"Hologram paper from Volanbusz",
-		"Hologramos papír a Volánbusztól" },
+		"Hologramos papír a Volánbusztól"},
 	0xa7d59ea6: [numLangs]string{
 		"paper_from_vending_machine",
 		"Paper from vending machine",
-		"Papír a jegykiadó automatából" },
+		"Papír a jegykiadó automatából"},
 	0xc785b60c: [numLangs]string{
 		"paper_bkk_pass",
 		"Paper BKK pass",
-		"Papír BKK bérlet" },
+		"Papír BKK bérlet"},
 	0x338797fe: [numLangs]string{
 		"electronic_pdf_from_web",
 		"PDF from MAV website",
-		"PDF a MÁV honlapjáról" },
+		"PDF a MÁV honlapjáról"},
 	0xf8b405cd: [numLangs]string{
 		"thermal_paper_from_ticket_inspector",
 		"Thermal paper from ticket inspector",
-		"Hőpapír a jegykezelőtől" },
+		"Hőpapír a jegykezelőtől"},
 }
 
 func (v TicketMediumKnownValues) ToString(l Language) string {
@@ -735,7 +736,7 @@ func (v TicketMediumKnownValues) ToString(l Language) string {
 		l = 0
 	}
 	s, found := values_TicketMediumKnownValues[v]
-	if ! found {
+	if !found {
 		return ""
 	}
 	return s[l]
@@ -821,7 +822,7 @@ type TripBlock struct {
 	ViaStations        []*StationId      `json:"via_stations,omitempty"`
 	Class              string            `json:"class"`
 	IsRealTicket       uint8             `json:"is_real_ticket"`
-	ValidStartAt       *Timestamp        `json:"valid_startat"`
+	ValidStartAt       *Timestamp        `json:"valid_start_at"`
 	ValidInterval      *ValidInterval    `json:"valid_interval"`
 	NumPassengers      uint8             `json:"num_passengers"`
 	AppliedDiscounts   *AppliedDiscounts `json:"applied_discounts"`
@@ -960,6 +961,6 @@ func (this *ValidInterval) Read(io *kaitai.Stream, parent kaitai.Struct, root *P
 
 func (this *ValidInterval) AsTimestamp(start *Timestamp) string {
 	tz, _ := time.LoadLocation("Europe/Budapest")
-	t := time.Unix(int64(start.SecondsSince1970 + this.Minutes * 60), 0)
+	t := time.Unix(int64(start.SecondsSince1970+this.Minutes*60), 0)
 	return t.In(tz).Format(time.DateTime)
 }

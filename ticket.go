@@ -12,6 +12,7 @@ import (
 )
 
 type Language uint
+
 const (
 	LangNone Language = iota
 	LangEn
@@ -200,7 +201,6 @@ func (t *Ticket) ToCSV() string {
 		t.Payload.Header.TicketMedium.Tag,
 	))
 
-
 	if t.Payload.Header.Flags.PersonBlockPresent {
 		bl := t.Payload.PersonBlock
 		b.WriteString(fmt.Sprintf("%s;%04d-%02d-%02d;%s;",
@@ -235,7 +235,7 @@ func (t *Ticket) ToCSV() string {
 	// what if there are > 1? (no such samples so far, though)
 	if t.Payload.Header.NumClassUpgradeBlocks > 0 {
 		bl := t.Payload.ClassUpgradeBlocks[0]
-		b.WriteString(fmt.Sprintf("%d;%s;%d;%s;%s;%08x;%s;%s;%d;%08x;", 
+		b.WriteString(fmt.Sprintf("%d;%s;%d;%s;%s;%08x;%s;%s;%d;%08x;",
 			bl.DepartureStation.Id,
 			bl.DepartureStation.Name,
 			bl.DestinationStation.Id,
@@ -254,7 +254,7 @@ func (t *Ticket) ToCSV() string {
 	// what if there are > 1? (no such samples so far, though)
 	if t.Payload.Header.NumPassBlocks > 0 {
 		bl := t.Payload.PassBlocks[0]
-		b.WriteString(fmt.Sprintf("%08x;%08x;%08x;%s;%s;%d;", 
+		b.WriteString(fmt.Sprintf("%08x;%08x;%08x;%s;%s;%d;",
 			bl.TicketKind.Tag,
 			bl.AppliedDiscounts1.Tag,
 			bl.AppliedDiscounts2.Tag,
@@ -297,7 +297,7 @@ func (t *Ticket) Translate(l Language) {
 		l = 0
 	}
 
-	if ! t.Valid || t.Payload == nil {
+	if !t.Valid || t.Payload == nil {
 		return
 	}
 	p := t.Payload
