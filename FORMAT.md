@@ -59,8 +59,9 @@ though many stations (e.g. Volánbusz stops) are missing from that dataset.
 
 	| Version  | Introduced at | Changes                                 |
 	|----------|---------------|-----------------------------------------|
-	| 2        | 2016?         |  For testing purposes only? Validity interval was only 2 bytes; timestamp epoch not 2017? Base64? |
-	| 3        | 2017?         |  For testing purposes only? timestamp epoch to 2017 |
+	| 1        | 2014?         |  For testing purposes only? Base64; Version bytes were in the payload (envelope began with the gzip header); Entirely different payload structure; timestamps used 10000*Y+100*M+D encoding |
+	| 2        | 2016?         |  For testing purposes only? Base64; Version bytes moved to envelope; Payload block layout similar to current; Validity interval was only 2 bytes |
+	| 3        | 2017?         |  For testing purposes only? timestamp changed to seconds since 2017, as now |
 	| 4        | 2017?         |  validity interval to 3 bytes, as now   |
 	| 5        | 2021-01-01?   |  ticket number and issuer RICS id moved to envelope, signature shortened |
 	| 6        | 2024-08-01?   |  train number length increased to 20    |
