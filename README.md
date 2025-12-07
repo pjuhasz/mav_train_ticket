@@ -80,11 +80,14 @@ it had to be edited extensively to be useful.)
 
 ### Extra tools
 
-The station codes were extracted from the Openstreetmap database via the
-[Overpass API](https://overpass-turbo.eu/). The [tools](tools) directory
-contains the query that retrieves a JSON with the list of stations, and
-a Perl script to regenerate the Go source containing the station lookup
+The station codes were extracted from the JSON response of the MÁV train ticket
+website at [jegy.mav.hu](jegy.mav.hu). The [tools](tools) directory
+contains a Perl script to regenerate the Go source containing the station lookup
 map from that.
+
+Previously, the station list was retrieved from the Openstreetmap database via the
+[Overpass API](https://overpass-turbo.eu/), but that list was incomplete.
+The tools directory also contains the query that retrieves a JSON with this list.
 
 ## Limitations
 

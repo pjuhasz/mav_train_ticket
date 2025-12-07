@@ -24,20 +24,26 @@ my $data;
 }
 
 my %uic;
+my %mav_ref;
 
-# some very common stations are weirdly missing from openstreetmap
-my %mav_ref = (
-	267  => 'Budapest-Keleti',
-	3639 => 'Budapest-Déli',
-);
+binmode STDERR, ':encoding(UTF-8)';
 
-for my $node (@{$data->{elements}}) {
-	my $tags = $node->{tags};
-	if (exists $tags->{uic_ref} and $tags->{uic_ref} =~ /^\d+$/ and defined $tags->{name}) {
-		$uic{$tags->{uic_ref}} = $tags->{name};
+for my $node (@{$data->{stations}}) {
+	next if $node->{isAlias};
+
+	my $name = $node->{name};
+	my $uic = $node->{code} =~ s/^0+//r;
+	my $mav = $node->{baseCode};
+	if (exists $uic{$uic}) {
+		warn "Duplicate UIC code for $uic: $name vs $uic{$uic}";
+	} else {
+		$uic{$uic} = $name;
 	}
-	if (exists $tags->{'ref:mav'}) {
-		$mav_ref{$tags->{'ref:mav'}} = $tags->{name};
+	next unless $mav;
+	if (exists $mav_ref{$mav}) {
+		warn "Duplicate MAV code for $mav: $name vs $mav_ref{$mav}";
+	} else {
+		$mav_ref{$mav} = $name;
 	}
 }
 
