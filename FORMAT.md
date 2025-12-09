@@ -113,12 +113,13 @@ version number in the envelope.
 The payload format apparently uses opaque, non-sequential 32-bit tags
 to represent things like ticket kinds, ticket medium, applied discounts,
 validity regions etc. These are highly variable, not always stable across
-versions, and for the most part, undeciphered.
+versions, and for the most part, undeciphered. One possibility is that
+these are hash keys for the actual strings.
 
 ### Header block
 
 The header is 39 bytes long in version 4 and before, and 19 bytes long
-in version 5 and above. There is at most one per ticket.
+in version 5 and above. There is always one per ticket.
 
 The first two fields exist in version 4 only.
 
@@ -167,16 +168,16 @@ There is at most one per ticket.
 
 | Offset | Size | Type      | Purpose                | Notes                 |
 |--------|------|-----------|------------------------|-----------------------|
-| 0      | 4    | uint32    | Ticket kind tag?       |                       |
+| 0      | 4    | uint32    | Ticket kind tag?       | ???                   |
 | 4      | 3    | uint24    | Departure station code |                       |
 | 7      | 3    | uint24    | Arrival station code   |                       |
 | 10     | 90   | 30*uint24 | Via stations           | null if not set       |
 | 100    | 1    | string    | Class                  | "1" or "2"            |
-| 101    | 1    | uint8     | Ticket valid?          | 0 was observed in some test tickets, usually 1 |
+| 101    | 1    | uint8     | Ticket valid?          | ??? - usually 1, but 0 was observed in some valid tickets too |
 | 102    | 4    | time      | Validity starts at     |                       |
 | 106    | 3    | uint24    | Validity interval      | in minutes            |
 | 109    | 1    | uint8     | No. of passengers?     | always 1?             |
-| 110    | 4    | uint8     | Applied discounts tag? |                       |
+| 110    | 4    | uint8     | Applied discounts tag? | ???                   |
 
 The identification of the purpose of the first and last fields is uncertain
 at best. The observed values vary among samples and versions.
@@ -213,7 +214,7 @@ more than one per ticket, and there often is.
 |--------|------|--------|------------------------|-------|
 | 0      | 3    | uint24 | Departure station code | |
 | 3      | 3    | uint24 | Arrival station code   | |
-| 6      | 4    | uint32 | Ticket kind tag?       | |
+| 6      | 4    | uint32 | Ticket kind tag?       | ??? |
 | 10     | 4    | time   | Time of travel         | |
 | 14     | 2    | uint16 | RICS code              | operator?, 0x0483 (1155) for MÁV-Start, not necessarily the same as in the header/envelope |
 | 16     | 5/20 | string | Train number           |  |
@@ -233,9 +234,9 @@ In theory there can be more than one per ticket.
 
 | Offset | Size | Type   | Purpose                | Notes                 |
 |--------|------|--------|------------------------|-----------------------|
-| 0      | 4    | uint32 | Ticket kind tag?       |                       |
-| 4      | 4    | uint32 | Applied discounts tag? |                       |
-| 8      | 4    | uint32 | Applied discounts tag? |                       |
+| 0      | 4    | uint32 | Ticket kind tag?       | ??? Includes validity region? |
+| 4      | 4    | uint32 | Applied discounts tag? | ???                   |
+| 8      | 4    | uint32 | Applied discounts tag? | ???                   |
 | 12     | 4    | time   | Validity starts at     |                       |
 | 16     | 3    | uint24 | Validity interval      | in minutes            |
 | 19     | 1    | uint8  | No. of passengers?     | always 1?             |

@@ -97,10 +97,6 @@ that, we don't have the necessary keys (and it's unlikely that we ever will).
 to represent things like ticket kinds, ticket medium, applied discounts,
 validity regions etc. These are highly variable and for the most part,
 undeciphered.
-- The conversion of station codes to station names is done on a best efforts
-basis. The list of train stations should be mostly complete (for both
-version 4 and version 5 identifiers), but Volánbusz stations are almost
-entirely missing.
 - Neither the go library nor the kaitai definitions handle versions 1 and 2
 (but those are of historical interest only, anyway).
 
