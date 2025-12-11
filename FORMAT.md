@@ -182,6 +182,10 @@ There is at most one per ticket.
 The identification of the purpose of the first and last fields is uncertain
 at best. The observed values vary among samples and versions.
 
+The field tentatively marked as "ticket valid" might be something else -
+it was observed that in a pair of tickets that were purchased at the same time
+this field is 0 in one of the tickets and 1 in the other.
+
 ### Class upgrade block
 
 This block can represent certain kinds of upgrades or addons to a basic

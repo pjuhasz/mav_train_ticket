@@ -137,6 +137,7 @@ func CSVHeader() string {
 	b.WriteString("destination_station_id;")
 	b.WriteString("destination_station_name;")
 	b.WriteString("class;")
+	b.WriteString("is_real_ticket;")
 	b.WriteString("valid_start_at;")
 	b.WriteString("valid_to;")
 	b.WriteString("num_passengers;")
@@ -216,13 +217,14 @@ func (t *Ticket) ToCSV() string {
 
 	if t.Payload.Header.Flags.TripBlockPresent {
 		bl := t.Payload.TripBlock
-		b.WriteString(fmt.Sprintf("%08x;%d;%s;%d;%s;%s;%s;%s;%d;%08x;",
+		b.WriteString(fmt.Sprintf("%08x;%d;%s;%d;%s;%s;%d;%s;%s;%d;%08x;",
 			bl.TicketKind.Tag,
 			bl.DepartureStation.Id,
 			bl.DepartureStation.Name,
 			bl.DestinationStation.Id,
 			bl.DestinationStation.Name,
 			bl.Class,
+			bl.IsRealTicket,
 			bl.ValidStartAt.String(),
 			bl.ValidInterval.AsTimestamp(bl.ValidStartAt),
 			bl.NumPassengers,

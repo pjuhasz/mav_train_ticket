@@ -34,7 +34,7 @@ import (
 	"os"
 	"encoding/json"
 
-	mav "github.com/pjuhasz/mavtrainticket"
+	mav "github.com/pjuhasz/mav_train_ticket"
 )
 
 func main() {
