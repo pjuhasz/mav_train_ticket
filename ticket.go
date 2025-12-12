@@ -231,7 +231,7 @@ func (t *Ticket) ToCSV() string {
 			bl.AppliedDiscounts.Tag,
 		))
 	} else {
-		b.WriteString(";;;;;;;;;;")
+		b.WriteString(";;;;;;;;;;;")
 	}
 
 	// what if there are > 1? (no such samples so far, though)
