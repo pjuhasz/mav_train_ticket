@@ -101,12 +101,42 @@ types:
         enum: ticket_kind_known_values
     enums:
       ticket_kind_known_values:
-        0xf1694467: potjegy
-        0x73b2da6d: helyjegy
+        0xf1694467: surcharge
+        0x73b2da6d: seat_reservation
+        0x639fe49e: train_ticket
+        0x1271cee2: bike_ticket
+        0xd9338c49: dog_pass
+        0x9364de3e: smart_ticket
+                
+        0x1378587b: x30_day_pass
+        0x294b183d: baz_county_pass
+        0x9b591ad2: budapest_72_hour_pass
+        0xb35523bc: hajdu_bihar_county_pass
+        0x2d31b61f: heves_county_pass
+        0xb438e7a5: nograd_county_pass
+        0x2487fa34: pest_county_pass
+        0xf2afd8fb: pest_county_pass2
+        0x2402e074: all_country_pass
+        
+        0x66e219a3: tram_train_ticket
+        0x9194c6e8: airport_bus_ticket
   applied_discounts:
     seq:
       - id: tag
         type: u4
+        enum: applied_discounts_known_values
+    enums:
+      applied_discounts_known_values:
+        0xd4e77f4b: full_price
+        0x1c89f297: x50pct_start_club_card
+        0xc29c077e: x50pct_by_age
+        0xca918a13: x50pct_by_age2
+        0xc99ee756: x50pct_employee_voucher
+        0x0344c689: x50pct_employee_voucher2
+        
+        0x4f1584ed: pass_full_price
+        0x13213fca: pass_student_id
+        0xffd50016: penalty_fee
   header:
     params:
       - id: version

@@ -308,15 +308,19 @@ func (t *Ticket) Translate(l Language) {
 
 	if p.TripBlock != nil && p.TripBlock.TicketKind != nil {
 		p.TripBlock.TicketKind.Name = p.TripBlock.TicketKind.Tag.ToString(l)
+		p.TripBlock.AppliedDiscounts.Name = p.TripBlock.AppliedDiscounts.Tag.ToString(l)
 	}
 
 	for _, bl := range p.ClassUpgradeBlocks {
 		bl.TicketKind.Name = bl.TicketKind.Tag.ToString(l)
+		bl.AppliedDiscounts.Name = bl.AppliedDiscounts.Tag.ToString(l)
 	}
 	for _, bl := range p.SeatReservationBlocks {
 		bl.TicketKind.Name = bl.TicketKind.Tag.ToString(l)
 	}
 	for _, bl := range p.PassBlocks {
 		bl.TicketKind.Name = bl.TicketKind.Tag.ToString(l)
+		bl.AppliedDiscounts1.Name = bl.AppliedDiscounts1.Tag.ToString(l)
+		bl.AppliedDiscounts2.Name = bl.AppliedDiscounts2.Tag.ToString(l)
 	}
 }

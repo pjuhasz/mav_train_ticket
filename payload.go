@@ -88,8 +88,46 @@ func (this *Payload) Read(io *kaitai.Stream, parent kaitai.Struct, root *Payload
 	return err
 }
 
+type AppliedDiscountsKnownValues int
+const (
+	AppliedDiscountsKnownValues__50pctEmployeeVoucher2 AppliedDiscountsKnownValues = 54838921
+	AppliedDiscountsKnownValues__PassStudentId AppliedDiscountsKnownValues = 320946122
+	AppliedDiscountsKnownValues__50pctStartClubCard AppliedDiscountsKnownValues = 478802583
+	AppliedDiscountsKnownValues__PassFullPrice AppliedDiscountsKnownValues = 1326810349
+	AppliedDiscountsKnownValues__50pctByAge AppliedDiscountsKnownValues = 3265005438
+	AppliedDiscountsKnownValues__50pctEmployeeVoucher AppliedDiscountsKnownValues = 3382634326
+	AppliedDiscountsKnownValues__50pctByAge2 AppliedDiscountsKnownValues = 3398535699
+	AppliedDiscountsKnownValues__FullPrice AppliedDiscountsKnownValues = 3571941195
+	AppliedDiscountsKnownValues__PenaltyFee AppliedDiscountsKnownValues = 4292149270
+)
+
+var values_AppliedDiscountsKnownValues = map[AppliedDiscountsKnownValues][numLangs]string{
+	0xd4e77f4b: [numLangs]string{"full_price", "Full price", "Teljesárú"},
+	0x1c89f297: [numLangs]string{"50pct_start_club_card", "50% discount for START club card", "50% kedvezmény START klubkártya után"},
+	0xc29c077e: [numLangs]string{"50pct_by_age", "50% discount by age", "50% kedvezmény életkor alapján"},
+	0xca918a13: [numLangs]string{"50pct_by_age", "50% discount by age", "50% kedvezmény életkor alapján"},
+	0xc99ee756: [numLangs]string{"50pct_employee_voucher", "50% employee voucher", "50% alkalmazottak utalványa alapján"},
+	0x0344c689: [numLangs]string{"50pct_employee_voucher", "50% employee voucher", "50% alkalmazottak utalványa alapján"},
+	
+	0x4f1584ed: [numLangs]string{"pass_full_price", "Full price pass", "Teljesárú bérlet"},
+	0x13213fca: [numLangs]string{"pass_student_id", "Pass with student id", "Diákigazolvány"},
+	0xffd50016: [numLangs]string{"penalty_fee", "Penalty fee", "Büntetés"},
+}
+
+func (v AppliedDiscountsKnownValues) ToString(l Language) string {
+	if l >= numLangs {
+		l = 0
+	}
+	s, found := values_AppliedDiscountsKnownValues[v]
+	if !found {
+		return ""
+	}
+	return s[l]
+}
+
 type AppliedDiscounts struct {
-	Tag     uint32 `json:"tag"`
+	Tag     AppliedDiscountsKnownValues `json:"tag"`
+	Name    string `json:"name"`
 	_io     *kaitai.Stream
 	_root   *Payload
 	_parent kaitai.Struct
@@ -112,7 +150,8 @@ func (this *AppliedDiscounts) Read(io *kaitai.Stream, parent kaitai.Struct, root
 	if err != nil {
 		return err
 	}
-	this.Tag = uint32(tmp6)
+	this.Tag = AppliedDiscountsKnownValues(tmp6)
+	this.Name = this.Tag.ToString(0)
 	return err
 }
 
@@ -638,13 +677,46 @@ func (this *StationId) Read(io *kaitai.Stream, parent kaitai.Struct, root *Paylo
 type TicketKindKnownValues int
 
 const (
-	TicketKindKnownValues__Helyjegy TicketKindKnownValues = 1941101165
-	TicketKindKnownValues__Potjegy  TicketKindKnownValues = 4050207847
+	TicketKindKnownValues__BikeTicket TicketKindKnownValues = 309448418
+	TicketKindKnownValues__30DayPass TicketKindKnownValues = 326654075
+	TicketKindKnownValues__AllCountryPass TicketKindKnownValues = 604168308
+	TicketKindKnownValues__PestCountyPass TicketKindKnownValues = 612891188
+	TicketKindKnownValues__BazCountyPass TicketKindKnownValues = 692787261
+	TicketKindKnownValues__HevesCountyPass TicketKindKnownValues = 758232607
+	TicketKindKnownValues__TrainTicket TicketKindKnownValues = 1671423134
+	TicketKindKnownValues__TramTrainTicket TicketKindKnownValues = 1726093731
+	TicketKindKnownValues__SeatReservation TicketKindKnownValues = 1941101165
+	TicketKindKnownValues__AirportBusTicket TicketKindKnownValues = 2442446568
+	TicketKindKnownValues__SmartTicket TicketKindKnownValues = 2472861246
+	TicketKindKnownValues__Budapest72HourPass TicketKindKnownValues = 2606308050
+	TicketKindKnownValues__HajduBiharCountyPass TicketKindKnownValues = 3008701372
+	TicketKindKnownValues__NogradCountyPass TicketKindKnownValues = 3023628197
+	TicketKindKnownValues__DogPass TicketKindKnownValues = 3644034121
+	TicketKindKnownValues__Surcharge TicketKindKnownValues = 4050207847
+	TicketKindKnownValues__PestCountyPass2 TicketKindKnownValues = 4071610619
 )
 
 var values_TicketKindKnownValues = map[TicketKindKnownValues][numLangs]string{
 	0xf1694467: [numLangs]string{"surcharge", "Surcharge", "Pótdíj"},
 	0x73b2da6d: [numLangs]string{"seat_reservation", "Seat reservation", "Helyjegy"},
+
+	0x639fe49e: [numLangs]string{"train_ticket", "Train ticket", "Menetjegy"},
+	0x1271cee2: [numLangs]string{"bike_ticket", "Bike ticket", "Kerékpárjegy"},
+	0xd9338c49: [numLangs]string{"dog_pass", "Dog pass", "Kutya bérlet"},
+	0x9364de3e: [numLangs]string{"smart_ticket", "Smart ticket", "Okosjegy"},
+
+	0x1378587b: [numLangs]string{"30_day_pass", "30 day pass", "30 napos bérlet"},
+	0x294b183d: [numLangs]string{"baz_county_pass", "Borsod-Abaúj-Zemplén county pass", "Borsod-Abaúj-Zemplén vármegyebérlet"},
+	0x9b591ad2: [numLangs]string{"budapest_72_hour_pass", "Budapest 72 hour pass", "Budapest 72 órás bérlet"},
+	0xb35523bc: [numLangs]string{"hajdu_bihar_county_pass", "Hajdú-Bihar county pass", "Hajdú-Bihar vármegyebérlet"},
+	0x2d31b61f: [numLangs]string{"heves_county_pass", "Heves county pass", "Heves vármegyebérlet"},
+	0xb438e7a5: [numLangs]string{"nograd_county_pass", "Nógrád county pass", "Nógrád vármegyebérlet"},
+	0x2487fa34: [numLangs]string{"pest_county_pass", "Pest county pass", "Pest vármegyebérlet"},
+	0xf2afd8fb: [numLangs]string{"pest_county_pass", "Pest county pass", "Pest vármegyebérlet"},
+	0x2402e074: [numLangs]string{"all_country_pass", "All-country pass", "Országbérlet"},
+
+	0x66e219a3: [numLangs]string{"tram_train_ticket", "Tram-train ticket", "Tram-train-jegy"},
+	0x9194c6e8: [numLangs]string{"airport_bus_ticket", "Airport bus ticket", "Repülőtéri buszjegy"},
 }
 
 func (v TicketKindKnownValues) ToString(l Language) string {
