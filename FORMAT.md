@@ -173,7 +173,7 @@ There is at most one per ticket.
 | 7      | 3    | uint24    | Arrival station code   |                       |
 | 10     | 90   | 30*uint24 | Via stations           | null if not set       |
 | 100    | 1    | string    | Class                  | "1" or "2"            |
-| 101    | 1    | uint8     | Ticket valid?          | ??? - usually 1, but 0 was observed in some valid tickets too |
+| 101    | 1    | uint8     | No. of trips?          | 0, 1, 2 observed      |
 | 102    | 4    | time      | Validity starts at     |                       |
 | 106    | 3    | uint24    | Validity interval      | in minutes            |
 | 109    | 1    | uint8     | No. of passengers?     | always 1?             |
@@ -182,8 +182,10 @@ There is at most one per ticket.
 The identification of the purpose of the first and last fields is uncertain
 at best. The observed values vary among samples and versions.
 
-The field tentatively marked as "ticket valid" might be something else -
-it was observed that in a pair of tickets that were purchased at the same time
+The value of the field tentatively marked as "number of trips" is usually
+1 for regular single-trip tickets, 2 for round-trip tickets (which may
+have been discontinued as of 2025) and 0 for passes. However, it was observed
+that in some pairs of tickets that were purchased at the same time
 this field is 0 in one of the tickets and 1 in the other.
 
 ### Class upgrade block

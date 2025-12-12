@@ -171,7 +171,7 @@ types:
         size: 1
         type: str
         encoding: ascii
-      - id: is_real_ticket
+      - id: num_trips
         type: u1
       - id: valid_start_at
         type: timestamp

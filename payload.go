@@ -821,7 +821,7 @@ type TripBlock struct {
 	DestinationStation *StationId        `json:"destination_station"`
 	ViaStations        []*StationId      `json:"via_stations,omitempty"`
 	Class              string            `json:"class"`
-	IsRealTicket       uint8             `json:"is_real_ticket"`
+	NumTrips           uint8             `json:"num_trips"`
 	ValidStartAt       *Timestamp        `json:"valid_start_at"`
 	ValidInterval      *ValidInterval    `json:"valid_interval"`
 	NumPassengers      uint8             `json:"num_passengers"`
@@ -886,7 +886,7 @@ func (this *TripBlock) Read(io *kaitai.Stream, parent *Payload, root *Payload) (
 	if err != nil {
 		return err
 	}
-	this.IsRealTicket = tmp54
+	this.NumTrips = tmp54
 	tmp55 := NewTimestamp()
 	err = tmp55.Read(this._io, this, this._root)
 	if err != nil {

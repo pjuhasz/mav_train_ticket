@@ -137,7 +137,7 @@ func CSVHeader() string {
 	b.WriteString("destination_station_id;")
 	b.WriteString("destination_station_name;")
 	b.WriteString("class;")
-	b.WriteString("is_real_ticket;")
+	b.WriteString("num_trips;")
 	b.WriteString("valid_start_at;")
 	b.WriteString("valid_to;")
 	b.WriteString("num_passengers;")
@@ -224,7 +224,7 @@ func (t *Ticket) ToCSV() string {
 			bl.DestinationStation.Id,
 			bl.DestinationStation.Name,
 			bl.Class,
-			bl.IsRealTicket,
+			bl.NumTrips,
 			bl.ValidStartAt.String(),
 			bl.ValidInterval.AsTimestamp(bl.ValidStartAt),
 			bl.NumPassengers,
