@@ -61,9 +61,9 @@ though many stations (e.g. Volánbusz stops) are missing from that dataset.
 	|----------|---------------|-----------------------------------------|
 	| 1        | 2014?         |  For testing purposes only? Base64; Version bytes were in the payload (envelope began with the gzip header); Entirely different payload structure; timestamps used 10000*Y+100*M+D encoding |
 	| 2        | 2016?         |  For testing purposes only? Base64; Version bytes moved to envelope; Payload block layout similar to current; Validity interval was only 2 bytes |
-	| 3        | 2017?         |  For testing purposes only? timestamp changed to seconds since 2017, as now |
-	| 4        | 2017?         |  validity interval to 3 bytes, as now   |
-	| 5        | 2021-01-01?   |  ticket number and issuer RICS id moved to envelope, signature shortened |
+	| 3        | 2017?         |  On certain routes only? Timestamp changed to seconds since 2017, as now |
+	| 4        | 2017-10-01?   |  validity interval to 3 bytes, as now   |
+	| 5        | 2021-12-01?   |  ticket number and issuer RICS id moved to envelope, signature shortened |
 	| 6        | 2024-08-01?   |  train number length increased to 20    |
 
 	(Not everyone got the memo, though: BKK style county passes with version 5
@@ -87,7 +87,7 @@ to verify these signatures.
 ## Payload
 
 - The payload consists of a header block, which is always present, and a
-varying number of blocks, neither of which is mandatory, but at least one
+varying number of blocks, none of which is mandatory, but at least one block
 of some kind must be there. There are fields in the header that specify
 which blocks are present and how many. The order of the blocks is fixed:
 	1. Header
