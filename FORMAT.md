@@ -223,13 +223,35 @@ more than one per ticket, and there often is.
 | 6      | 4    | uint32 | Ticket kind tag?       | ??? |
 | 10     | 4    | time   | Time of travel         | |
 | 14     | 2    | uint16 | RICS code              | operator?, 0x0483 (1155) for MÁV-Start, not necessarily the same as in the header/envelope |
-| 16     | 5/20 | string | Train number           |  |
-| 21/36  | 1    | uint8  | No. of passengers?     | 0x01 in all samples |
-| 22/37  | 3    | string | Coach number           | |
-| 25/40  | 2    | uint16 | Seat number            | |
-| 27/42  | 2    | uint16 | Seat number            | repeated from previous field? |
-| 29/44  | 28   | -      | reserved               | null in all samples |
+| 16     | 5/20 | string | Train number           | |
+| 21/36  | 1    | uint8  | No. of passengers      | usually 1, rarely more |
+| 22/37  | 7    | struct | Passenger 1 info       | |
+| 29/44  | 7    | struct | Passenger 2 info       | |
+| 36/51  | 7    | struct | Passenger 3 info       | |
+| 43/58  | 7    | struct | Passenger 4 info       | |
+| 50/65  | 7    | struct | Passenger 5 info       | |
 
+A seat reservation block can store seat-specific data for up to 5
+passengers. These are encoded in 7-byte sub-structures, with the following 
+layout (offsets are counted from the start of the sub-structure):
+
+| Offset | Size | Type   | Purpose                | Notes |
+|--------|------|--------|------------------------|-------|
+| 0      | 3    | string | Coach number           | |
+| 3      | 2    | uint16 | Seat number            | |
+| 5      | 2    | uint16 | Seat number 2          | usually repeated from previous field |
+
+There are 5 slots for such sub-structures, if unused, they are filled with zeros.
+
+The "number of passengers" field often, but not always, tells how many
+of these slots are filled: for regular seat reservations the value of that
+field does correspond to the number of filled slots, but for certain kinds
+of surcharges the slots are always empty even when the "number of passengers"
+is not zero. In any case, the number of passenger is usually 1.
+
+It is not obvious why there are two fields for the seat number. The second
+number is usually the same as the first. However, in some cases they differ:
+this may mean that one passenger is occupying a range of seats.
 
 ### Pass block
 

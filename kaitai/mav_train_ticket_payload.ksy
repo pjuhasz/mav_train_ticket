@@ -234,6 +234,17 @@ types:
         type: u1
       - id: applied_discounts
         type: applied_discounts
+  passenger_slot:
+    seq:
+      - id: car_number
+        size: 3
+        type: str
+        terminator: 0
+        encoding: ascii
+      - id: seat_number
+        type: u2
+      - id: seat_number_2
+        type: u2
   seat_reservation_block:
     params:
       - id: version
@@ -256,17 +267,10 @@ types:
         encoding: ascii
       - id: num_passengers
         type: u1
-      - id: car_number
-        size: 3
-        type: str
-        terminator: 0
-        encoding: ascii
-      - id: seat_number
-        type: u2
-      - id: seat_number_2
-        type: u2
-      - size: 28
-        id: reserved
+      - id: passengers
+        type: passenger_slot
+        repeat: expr
+        repeat-expr: 5
   pass_block:
     params:
       - id: version
