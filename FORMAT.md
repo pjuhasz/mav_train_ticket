@@ -225,33 +225,43 @@ more than one per ticket, and there often is.
 | 14     | 2    | uint16 | RICS code              | operator?, 0x0483 (1155) for MÁV-Start, not necessarily the same as in the header/envelope |
 | 16     | 5/20 | string | Train number           | |
 | 21/36  | 1    | uint8  | No. of passengers      | usually 1, rarely more |
-| 22/37  | 7    | struct | Passenger 1 info       | |
-| 29/44  | 7    | struct | Passenger 2 info       | |
-| 36/51  | 7    | struct | Passenger 3 info       | |
-| 43/58  | 7    | struct | Passenger 4 info       | |
-| 50/65  | 7    | struct | Passenger 5 info       | |
+| 22/37  | 7    | struct | Seat range 1           | |
+| 29/44  | 7    | struct | Seat range 2           | |
+| 36/51  | 7    | struct | Seat range 3           | |
+| 43/58  | 7    | struct | Seat range 4           | |
+| 50/65  | 7    | struct | Seat range 5           | |
 
-A seat reservation block can store seat-specific data for up to 5
-passengers. These are encoded in 7-byte sub-structures, with the following 
-layout (offsets are counted from the start of the sub-structure):
+A seat reservation block can refer to more than one seats.
+These are represented as ranges, encoded in 7-byte sub-structures,
+with the following layout (offsets are counted from the start of the
+sub-structure):
 
-| Offset | Size | Type   | Purpose                | Notes |
-|--------|------|--------|------------------------|-------|
-| 0      | 3    | string | Coach number           | |
-| 3      | 2    | uint16 | Seat number            | |
-| 5      | 2    | uint16 | Seat number 2          | usually repeated from previous field |
+| Offset | Size | Type   | Purpose                | Notes          |
+|--------|------|--------|------------------------|----------------|
+| 0      | 3    | string | Coach number           |                |
+| 3      | 2    | uint16 | Seat number            | start of range |
+| 5      | 2    | uint16 | Seat number 2          | end of range   |
 
 There are 5 slots for such sub-structures, if unused, they are filled with zeros.
 
-The "number of passengers" field often, but not always, tells how many
-of these slots are filled: for regular seat reservations the value of that
-field does correspond to the number of filled slots, but for certain kinds
-of surcharges the slots are always empty even when the "number of passengers"
-is not zero. In any case, the number of passenger is usually 1.
+Each sub-structure represents a contiguous range of seats. Single seats are
+encoded as a range where the starting and ending seat number is the same.
 
-It is not obvious why there are two fields for the seat number. The second
-number is usually the same as the first. However, in some cases they differ:
-this may mean that one passenger is occupying a range of seats.
+For example, a seat reservation for the seats 25, 26 and 27 are stored
+in the ticket as a single range, with the bytes `xx xx xx 00 19 00 1b`
+(that is, 25 and 27). These would be printed on the ticket as `25-27`.
+
+But a reservation for the seats 25 and 27 would be stored in two separate
+ranges as `xx xx xx 00 19 00 19` and `xx xx xx 00 1b 00 1b`. In this case
+the ticket would show `25,27`.
+
+The "number of passengers" field tells how many passengers or seat reservations
+are there in total. This number is usually the same as the number of seats
+obtained by expanding and adding up all the ranges, but for certain kinds
+of surcharges (e.g. the "IC pótjegy") the slots are always empty even when
+the "number of passengers" is not zero.
+
+However, the most common case by far is a seat reservation for a single seat.
 
 ### Pass block
 

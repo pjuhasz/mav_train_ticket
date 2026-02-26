@@ -234,7 +234,7 @@ types:
         type: u1
       - id: applied_discounts
         type: applied_discounts
-  passenger_slot:
+  seat_range:
     seq:
       - id: car_number
         size: 3
@@ -267,8 +267,8 @@ types:
         encoding: ascii
       - id: num_passengers
         type: u1
-      - id: passengers
-        type: passenger_slot
+      - id: seat_ranges
+        type: seat_range
         repeat: expr
         repeat-expr: 5
   pass_block:

@@ -270,7 +270,7 @@ func (t *Ticket) ToCSV() string {
 
 	for i := 0; i < len(t.Payload.SeatReservationBlocks); i++ {
 		bl := t.Payload.SeatReservationBlocks[i]
-		b.WriteString(fmt.Sprintf("%d;%s;%d;%s;%08x;%s;%d;%s;%d;%s;%d;",
+		b.WriteString(fmt.Sprintf("%d;%s;%d;%s;%08x;%s;%d;%s;%d;%s;%s;",
 			bl.DepartureStation.Id,
 			bl.DepartureStation.Name,
 			bl.DestinationStation.Id,
@@ -280,8 +280,8 @@ func (t *Ticket) ToCSV() string {
 			bl.RicsCode,
 			bl.TrainNumber,
 			bl.NumPassengers,
-			bl.CarNumber,
-			bl.SeatNumber,
+			bl.CarNumbers(),
+			bl.AllSeats(),
 		))
 	}
 
