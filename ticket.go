@@ -280,8 +280,8 @@ func (t *Ticket) ToCSV() string {
 			bl.RicsCode,
 			bl.TrainNumber,
 			bl.NumPassengers,
-			bl.CarNumbers(),
-			bl.AllSeats(),
+			bl.CarNumbers,
+			bl.SeatNumbers,
 		))
 	}
 

@@ -585,7 +585,9 @@ type SeatReservationBlock struct {
 	TrainNumber        string       `json:"train_number"`
 	NumPassengers      uint8        `json:"num_passengers"`
 	SeatRanges         []*SeatRange `json:"seat_ranges"`
-	Version            uint8 `json:"version"`
+	CarNumbers         string       `json:"car_numbers"`
+	SeatNumbers        string       `json:"seat_numbers"`
+	Version            uint8        `json:"version"`
 	_io                *kaitai.Stream
 	_root              *Payload
 	_parent            *Payload
@@ -662,10 +664,14 @@ func (this *SeatReservationBlock) Read(io *kaitai.Stream, parent *Payload, root 
 			this.SeatRanges = append(this.SeatRanges, tmp53)
 		}
 	}
+
+	this.CarNumbers = this.gatherCarNumbers()
+	this.SeatNumbers = this.gatherAllSeats()
+
 	return err
 }
 
-func (this *SeatReservationBlock) CarNumbers() string {
+func (this *SeatReservationBlock) gatherCarNumbers() string {
 	if len(this.SeatRanges) == 0 {
 		return ""
 	}
@@ -686,7 +692,7 @@ func (this *SeatReservationBlock) CarNumbers() string {
 }
 
 // this kind of assumes that all reservations are in the same car
-func (this *SeatReservationBlock) AllSeats() string {
+func (this *SeatReservationBlock) gatherAllSeats() string {
 	if len(this.SeatRanges) == 0 {
 		return ""
 	}
