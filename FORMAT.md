@@ -19,7 +19,10 @@ the medium of the ticket (e.g. app, web, vending machine).
 and it doesn't seem to have any commonality to any common ticket formats.
 
 - This format is used for domestic tickets only. International tickets seem to
-follow the UIC 918.3 standard. Also, there is an older format for domestic tickets,
+follow the UIC 918.3 standard: A4-sized, home-printed tickets have TLB RCT2
+barcodes, while the smaller, wide rectangular cards have SSBv3. These formats
+are documented in [European Union Agency For Railways - Technical Document - Digital Security Elements For Rail Passenger Ticketing - TAP TSI TD B.12](https://www.era.europa.eu/system/files/2022-10/Recommendation%20on%20TAP%20TSI%20Revision%20-%20Technical%20Document%20-%20B12.pdf).
+ Also, there is an older format for domestic tickets,
 issued until 2020 or so, which used QR codes and a zlib-compressed textual inner
 payload. This format is of historical interest only, the tools and documentation
 in this repository doesn't cover it. It is documented at the [KItinerary wiki](https://community.kde.org/KDE_PIM/KItinerary/MAV_Barcode).

@@ -89,6 +89,10 @@ Previously, the station list was retrieved from the Openstreetmap database via t
 [Overpass API](https://overpass-turbo.eu/), but that list was incomplete.
 The tools directory also contains the query that retrieves a JSON with this list.
 
+While this repository focuses on the domestic barcode format, there are two
+quick and dirty decoder scripts in the tools directory for the
+UIC 918.3/RCT2 and SSBv3 formats used on international tickets.
+
 ## Limitations
 
 - The signatures are not checked or validated. Even if we knew how to do
