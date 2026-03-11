@@ -148,6 +148,7 @@ Known values for the ticket medium tag:
 - `0xc785b60c`: paper_bkk_pass
 - `0x338797fe`: electronic_pdf_from_web
 - `0xf8b405cd`: thermal_paper_from_ticket_inspector
+- `0xbaabd261`: hologram_paper_from_volanbusz_driver
 
 
 ### Person block

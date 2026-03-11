@@ -847,6 +847,7 @@ const (
 	TicketMediumKnownValues__PaperFromVendingMachine         TicketMediumKnownValues = 2815794854
 	TicketMediumKnownValues__PaperBkkPass                    TicketMediumKnownValues = 3347428876
 	TicketMediumKnownValues__ThermalPaperFromTicketInspector TicketMediumKnownValues = 4172547533
+	TicketMediumKnownValues__ThermalPaperFromVolanbuszDriver TicketMediumKnownValues = 0xbaabd261
 )
 
 var values_TicketMediumKnownValues = map[TicketMediumKnownValues][numLangs]string{
@@ -878,6 +879,11 @@ var values_TicketMediumKnownValues = map[TicketMediumKnownValues][numLangs]strin
 		"thermal_paper_from_ticket_inspector",
 		"Thermal paper from ticket inspector",
 		"Hőpapír a jegykezelőtől"},
+	0xbaabd261: [numLangs]string{
+		"hologram_paper_from_volanbusz_driver",
+		"Hologram paper from Volanbusz driver",
+		"Hologramos papír a Volánbusz sofőrtől"},
+
 }
 
 func (v TicketMediumKnownValues) ToString(l Language) string {
