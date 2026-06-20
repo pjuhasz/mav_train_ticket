@@ -70,26 +70,46 @@ though many stations (e.g. Volánbusz stops) are missing from that dataset.
 	| 6        | 2024-08-01?   |  train number length increased to 20    |
 
 	(Not everyone got the memo, though: BKK style county passes with version 5
-	were still issued as late as 2025 Nov.)
+	were still issued as late as 2026 Jun.)
 - The second byte is the version of the signing key. It is likely that 
 numbering restarts with each major version, and it is also possible that
 each major vendor under the MÁV umbrella gets a dedicated key. (Note that
 we don't have the actual keys.)
+
 - Version 5+ only: the ticket number (as printed on the ticket), as a 18 bytes long string.
-Train tickets usually begin with 5594.
+
 - Version 5+ only: the RICS code of the issuing company, as a 4 bytes long string.
 Observed values: 1155 = MÁV, 0042 = Volánbusz, 0043 = GYSEV, 3663 = MÁV-HÉV
+
 - All versions: the actual ticket contents as a gzip-compressed blob, complete
 with the standard `1fb808` magic number, checksum and uncompressed length. The 7
 bytes in the gzip header after the magic number are usually filled with zeroes.
+
 - And finally a digital signature. The length is 256 bytes for version 4,
 and 56 bytes for version 5 and above. The actual cryptographic algorithm is
 not known, though. Nor do we have any of the keys, so currently it is not possible
 to verify these signatures.
 
+Notes about ticket numbers:
+
+- Ticket numbers issued by MÁV begin with 55. These are 17 bytes long
+(so the last byte of the ticket number field is zero). The first half
+of these ticket numbers identifies the vending machine or ticket counter
+that issued the ticket and the second half is a serial number for that
+specific station. 
+
+- GYSEV ticket numbers have a similar structure, but they begin with 43.
+
+- Some recent Volánbusz tickets (issued via MÁV channels) have ticket 
+numbers with a similar structure but prefixed by the character V.
+
+- However, tickets and county passes issued by BKK vending machines use 
+a completely different ticket number scheme (4 alphanumeric + 6 digits).
+
+
 ## Payload
 
-- The payload consists of a header block, which is always present, and a
+The payload consists of a header block, which is always present, and a
 varying number of blocks, none of which is mandatory, but at least one block
 of some kind must be there. There are fields in the header that specify
 which blocks are present and how many. The order of the blocks is fixed:
@@ -181,7 +201,7 @@ There is at most one per ticket.
 | 102    | 4    | time      | Validity starts at     |                       |
 | 106    | 3    | uint24    | Validity interval      | in minutes            |
 | 109    | 1    | uint8     | No. of passengers?     | always 1?             |
-| 110    | 4    | uint8     | Applied discounts tag? | ???                   |
+| 110    | 4    | uint32    | Applied discounts tag? | ???                   |
 
 The identification of the purpose of the first and last fields is uncertain
 at best. The observed values vary among samples and versions.
