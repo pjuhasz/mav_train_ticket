@@ -24,10 +24,17 @@ and it doesn't seem to have any commonality to any common ticket formats.
 follow the UIC 918.3 standard: A4-sized, home-printed tickets have TLB RCT2
 barcodes, while the smaller, wide rectangular cards have SSBv3. These formats
 are documented in [European Union Agency For Railways - Technical Document - Digital Security Elements For Rail Passenger Ticketing - TAP TSI TD B.12](https://www.era.europa.eu/system/files/2022-10/Recommendation%20on%20TAP%20TSI%20Revision%20-%20Technical%20Document%20-%20B12.pdf).
- Also, there is an older format for domestic tickets,
-issued until 2020 or so, which used QR codes and a zlib-compressed textual inner
-payload. This format is of historical interest only, the tools and documentation
-in this repository doesn't cover it. It is documented at the [KItinerary wiki](https://community.kde.org/KDE_PIM/KItinerary/MAV_Barcode).
+
+	Also, there is an older format for domestic tickets,
+	issued until 2020 or so, which used QR codes and a zlib-compressed textual inner
+	payload. This format is of historical interest only, the tools and documentation
+	in this repository doesn't cover it. It is documented at the [KItinerary wiki](https://community.kde.org/KDE_PIM/KItinerary/MAV_Barcode).
+
+	Additionally, there is scant evidence for a completely different binary format
+	used by GySEV around 2021, presumably before they standardized to the
+	current format described by the rest of this document.
+	Due to the small number of available samples, it is currently not possible to
+	decipher this obsolete format.
 
 - The format uses an outer layer or envelope that consists of a fixed header, a
 gzip-compressed blob that contains the actual ticket data, and a digital
