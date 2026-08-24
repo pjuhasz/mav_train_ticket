@@ -15,6 +15,8 @@ the medium of the ticket (e.g. app, web, vending machine).
 	use Aztec codes. The electronic PDFs generated
 	by the MÁV website continue to be PDF 417, though.
 
+	BKK passes also use PDF 417. For some of them, the barcode is printed upside down.
+
 - The binary format described here is undocumented and proprietary to MÁV,
 and it doesn't seem to have any commonality to any common ticket formats.
 
@@ -70,7 +72,7 @@ though many stations (e.g. Volánbusz stops) are missing from that dataset.
 	| 6        | 2024-08-01?   |  train number length increased to 20    |
 
 	(Not everyone got the memo, though: BKK style county passes with version 5
-	were still issued as late as 2026 Jun.)
+	were still issued as late as 2026 Aug.)
 - The second byte is the version of the signing key. It is likely that 
 numbering restarts with each major version, and it is also possible that
 each major vendor under the MÁV umbrella gets a dedicated key. (Note that
@@ -79,24 +81,30 @@ we don't have the actual keys.)
 - Version 5+ only: the ticket number (as printed on the ticket), as a 18 bytes long string.
 
 - Version 5+ only: the RICS code of the issuing company, as a 4 bytes long string.
-Observed values: 1155 = MÁV, 0042 = Volánbusz, 0043 = GYSEV, 3663 = MÁV-HÉV
+Observed values: 1155 = MÁV, 0042 = Volánbusz, 0043 = GYSEV, 3663 = MÁV-HÉV (in practice: BKK)
 
 - All versions: the actual ticket contents as a gzip-compressed blob, complete
-with the standard `1fb808` magic number, checksum and uncompressed length. The 7
-bytes in the gzip header after the magic number are usually filled with zeroes.
+with the standard header, checksum and uncompressed length. The 7
+bytes in the gzip header after the magic number are usually, but not always, filled with zeroes
+(see below).
 
 - And finally a digital signature. The length is 256 bytes for version 4,
 and 56 bytes for version 5 and above. The actual cryptographic algorithm is
 not known, though. Nor do we have any of the keys, so currently it is not possible
 to verify these signatures.
 
-Notes about ticket numbers:
+### Notes about ticket numbers
 
 - Ticket numbers issued by MÁV begin with 55. These are 17 bytes long
 (so the last byte of the ticket number field is zero). The first half
 of these ticket numbers identifies the vending machine or ticket counter
 that issued the ticket and the second half is a serial number for that
-specific station. 
+specific station.
+
+- Tickets and passes printed by a MÁV vending machine tend to begin with 55 too,
+even if they are issued for a partner company and valid for
+local transport only inside a specific city (e.g.
+Budapest - BKK passes can be bought in MÁV machines, Szeged, Gyula, Veszprém).
 
 - GYSEV ticket numbers have a similar structure, but they begin with 43.
 
@@ -106,6 +114,31 @@ numbers with a similar structure but prefixed by the character V.
 - However, tickets and county passes issued by BKK vending machines use 
 a completely different ticket number scheme (4 alphanumeric + 6 digits).
 
+### Notes about the gzip header
+
+The standard gzip header, as used here, contains a few metadata fields
+after the fixed magic number. For completeness' sake, these are:
+
+| Offset | Size | Type    | Purpose                       | Notes                 |
+|--------|------|---------|-------------------------------|-----------------------|
+| 0      | 2    | uint16  | Magic number                  | Always 1F 8B          |
+| 2      | 1    | uint8   | Compression method            | Always 08 (deflate)   |
+| 3      | 1    | bitmask | Flags (extra fields in header)|                       |
+| 4      | 4    | uint32  | Modification time             | Unix timestamp (LE)   |
+| 8      | 1    | bitmask | Deflate flags                 |                       |
+| 9      | 1    | uint8   | Filesystem                    |                       |
+
+For tickets and passes issued by MÁV (printed by a MÁV vending machine etc.)
+all fields after the magic number are zeroed out.
+
+However, for BKK passes the last field (filesystem) tends to have the value of either
+3 (= Unix) or 10 (= TOPS-20, according to Wikipedia), which make little sense.
+Interestingly, the value tends to correlate with the certificate id in the ticket
+envelope (BKK passes use at least two different values for those, even though they are
+visually indistinguishable).
+
+And for tickets printed by EMKE machines the last field is 255, and the modification time
+field is filled with a plausible timestamp.
 
 ## Payload
 
@@ -290,8 +323,8 @@ However, the most common case by far is a seat reservation for a single seat.
 ### Pass block
 
 This block represents information that is not tied to any specific route or vehicle.
-Most commonly used in monthly passes, but penalty fees are also represented
-by this block. It is always 20 bytes long.
+Most commonly used in monthly (or yearly or 24/72 hour) passes, but
+penalty fees are also represented by this block. It is always 20 bytes long.
 In theory there can be more than one per ticket.
 
 | Offset | Size | Type   | Purpose                | Notes                 |
@@ -306,5 +339,7 @@ In theory there can be more than one per ticket.
 The purpose and meaning of the first 3 fields is completely unknown.
 For passes the validity region must be encoded among them somehow, but
 it is not known which field is responsible for that.
+Different providers tend to use different tags.
+The tags are not stable across main versions.
 
 For penalty fees the validity fields are zero.
