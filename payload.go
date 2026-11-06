@@ -1092,18 +1092,12 @@ func (this *ValidInterval) Read(io *kaitai.Stream, parent kaitai.Struct, root *P
 	this._root = root
 
 	switch this.Version {
-	case 2:
+	case 2, 3:
 		tmp59, err := this._io.ReadU2be()
 		if err != nil {
 			return err
 		}
-		this.Minutes = int(tmp59)
-	case 3:
-		tmp60, err := this._io.ReadU2be()
-		if err != nil {
-			return err
-		}
-		this.Minutes = int(tmp60)
+		this.Minutes = int(tmp59) * 1440 - 1
 	default:
 		tmp61, err := this._io.ReadBitsIntBe(24)
 		if err != nil {

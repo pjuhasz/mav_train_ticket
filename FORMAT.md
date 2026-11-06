@@ -64,22 +64,6 @@ though many stations (e.g. Volánbusz stops) are missing from that dataset.
 
 - The first byte is the major version number. The current version is 6.
 
-	Here is a table listing the major versions observed so far, the time at which
-	they were introduced and the notable changes that came with them. The
-	change to version 5 represents the biggest change, where the ticket number
-	and issuer code were moved out from the payload to the envelope.
-
-	| Version  | Introduced at | Changes                                 |
-	|----------|---------------|-----------------------------------------|
-	| 1        | 2014?         |  For testing purposes only? Base64; Version bytes were in the payload (envelope began with the gzip header); Entirely different payload structure; timestamps used 10000*Y+100*M+D encoding |
-	| 2        | 2016?         |  For testing purposes only? Base64; Version bytes moved to envelope; Payload block layout similar to current; Validity interval was only 2 bytes |
-	| 3        | 2017?         |  On certain routes only? Timestamp changed to seconds since 2017, as now |
-	| 4        | 2017-10-01?   |  validity interval to 3 bytes, as now   |
-	| 5        | 2021-12-01?   |  ticket number and issuer RICS id moved to envelope, signature shortened |
-	| 6        | 2024-08-01?   |  train number length increased to 20    |
-
-	(Not everyone got the memo, though: BKK style county passes with version 5
-	were still issued as late as 2026 Aug.)
 - The second byte is the version of the signing key. It is likely that 
 numbering restarts with each major version, and it is also possible that
 each major vendor under the MÁV umbrella gets a dedicated key. (Note that
@@ -100,6 +84,26 @@ and 56 bytes for version 5 and above. The actual cryptographic algorithm is
 not known, though. Nor do we have any of the keys, so currently it is not possible
 to verify these signatures.
 
+### Versions
+
+Here is a table listing the major versions observed so far, the time at which
+they were introduced and the notable changes that came with them. The
+change to version 5 represents the biggest change, where the ticket number
+and issuer code were moved out from the payload to the envelope.
+
+| Version  | Introduced at | Changes                                 |
+|----------|---------------|-----------------------------------------|
+| 1        | 2014?         |  <ul><li>For testing purposes only?</li><li>Base64 instead of binary</li><li>Entirely different payload structure</li><li>Version bytes were in the payload (envelope began with the gzip header)</li><li>timestamps used `10000*Y+100*M+D` encoding</li></ul> |
+| 2        | 2016?         |  <ul><li>For testing purposes only?</li><li>Base64 instead of binary</li><li>Version bytes moved to envelope</li><li>Current payload block layout introduced</li><li>Validity interval was only 2 bytes, in units of days</li></ul> |
+| 3        | 2017?         |  <ul><li>On certain routes only?</li><li>Timestamp changed to seconds since 2017, as now</li></ul> |
+| 4        | 2017-10-01?   |  <ul><li>validity interval to 3 bytes, in units of minutes, as now</li></ul>   |
+| 5        | 2021-12-01?   |  <ul><li>ticket number and issuer RICS id moved to envelope</li><li>signature shortened</li></ul> |
+| 6        | 2024-08-01?   |  <ul><li>train number length increased to 20</li></ul>    |
+
+(Not everyone got the memo, though: BKK style county passes with version 5
+were still issued as late as 2026 Nov.)
+
+
 ### Notes about ticket numbers
 
 - Ticket numbers issued by MÁV begin with 55. These are 17 bytes long
@@ -111,7 +115,7 @@ specific station.
 - Tickets and passes printed by a MÁV vending machine tend to begin with 55 too,
 even if they are issued for a partner company and valid for
 local transport only inside a specific city (e.g.
-Budapest - BKK passes can be bought in MÁV machines, Szeged, Gyula, Veszprém).
+Budapest (BKK passes can be bought in MÁV machines), Szeged, Gyula, Veszprém).
 
 - GYSEV ticket numbers have a similar structure, but they begin with 43.
 
@@ -178,6 +182,12 @@ to represent things like ticket kinds, ticket medium, applied discounts,
 validity regions etc. These are highly variable, not always stable across
 versions, and for the most part, undeciphered. One possibility is that
 these are hash keys for the actual strings.
+
+A note about the validity interval fields: in version 3 and earlier the
+validity interval field used 2 bytes and was measured in units of days.
+Since version 4 these fields occupy 3 bytes and its unit of measurement
+was changed to minutes. The tables below do not reflect this distinction,
+they are valid for version 4 and above only.
 
 ### Header block
 
@@ -272,6 +282,9 @@ than once per ticket.
 
 Again, the real purpose and meaning of the ticket kind and applied discount
 fields is not known.
+
+This block rarely appears in current (2026) tickets, if at all, because
+the products it used to encode were discontinued or restructured.
 
 ### Seat reservation block
 

@@ -73,13 +73,16 @@ types:
       - id: version
         type: u1
     seq:
-      - id: minutes
+      - id: raw_value
         type:
           switch-on: version
           cases:
             2: u2
             3: u2
             _: b24
+    instances:
+      minutes:
+        value: 'version > 3 ? raw_value : raw_value * 1440 - 1'
   ticket_medium:
     seq:
       - id: tag
